@@ -1,0 +1,18 @@
+[project]
+name = "python-polyfill"
+version = "0.0.1"
+description = ""
+authors = [
+    {name = "Zhan Rongrui", email = "2742392377@qq.com"},
+]
+dependencies = []
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm.build]
+editable-backend = "editables"
