@@ -20,12 +20,12 @@ match i:
 def generate_orelse(convert_if: ast.If, subject: ast.Name, value: any, body: ast.Expr):
     if len(convert_if.orelse) == 0:
         match value:
-            case ast.MatchValue:
+            case ast.MatchValue():
                 """
                 case "test":
                 """
                 convert_if.orelse = [ast.If(test=ast.Compare(left=subject, ops=[ast.Is()], comparators=[value.value]), body=body, orelse=[])]
-            case ast.MatchAs:
+            case ast.MatchAs():
                 """
                 case _:
                 """
@@ -49,7 +49,7 @@ for index, node in enumerate(match_func.body):
             convert_if = zero_case.body
         else:
             # Initialize `If`` Root Node
-            convert_if = ast.If(test=ast.Compare(left=match_func.body[index].subject , ops=[ast.Is()], comparators=[zero_case.pattern.value]), body=zero_case.body, orelse=[])
+            convert_if: ast.If = ast.If(test=ast.Compare(left=match_func.body[index].subject , ops=[ast.Is()], comparators=[zero_case.pattern.value]), body=zero_case.body, orelse=[])
             for case_index, case_node in enumerate(node.cases, 1):
                 generate_orelse(convert_if, match_func.body[index].subject, case_node.pattern, case_node.body)
                 # breakpoint()
