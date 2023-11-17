@@ -8,12 +8,12 @@ authors = [
 dependencies = [
     "libcst>=1.1.0",
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.8"
 readme = "README.md"
 license = {text = "MIT"}
 
 [project.scripts]
-pdm = "pyfuture.__main__:app"
+pyfuture = "pyfuture.__main__:app"
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]

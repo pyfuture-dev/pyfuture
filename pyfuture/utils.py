@@ -19,7 +19,7 @@ def transform_code(
 def transfer_code(
     code: str,
     *,
-    target: tuple[int, int] = (3, 6),
+    target: tuple[int, int] = (3, 8),
 ) -> str:
     """
     Transfer code to specified target version of python.
@@ -39,7 +39,7 @@ def transfer_file(
     src_file: Path,
     tgt_file: Path,
     *,
-    target: tuple[int, int] = (3, 6),
+    target: tuple[int, int] = (3, 8),
 ):
     """
     Transfer code from src_file and write to tgt_file.
