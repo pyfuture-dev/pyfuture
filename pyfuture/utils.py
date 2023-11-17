@@ -1,24 +1,31 @@
 from libcst.codemod import CodemodContext, Codemod
-from loguru import logger
 import libcst as cst
+from pathlib import Path
 
 
 def transform_code(
     transformers: list[Codemod],
     code: str,
 ) -> str:
+    """
+    Transform code with some transformers, and return the transformed code.
+    """
     module = cst.parse_module(code)
     for transformer in transformers:
         module = transformer.transform_module(module)
     return module.code
 
 
-def transfer_to(
+def transfer_code(
     code: str,
     *,
-    target: str|None = None,
-) -> str | None:
+    target: tuple[int, int] = (3, 6),
+) -> str:
+    """
+    Transfer code to specified target version of python.
+    """
     from .codemod import TransformTypeParametersCommand
+    assert target[0] == 3, "Only support python3"
     new_code = transform_code(
         transformers=[
             TransformTypeParametersCommand(CodemodContext()),
@@ -27,3 +34,19 @@ def transfer_to(
         code=code,
     )
     return new_code
+
+def transfer_file(
+    src_file: Path,
+    tgt_file: Path,
+    *,
+    target: tuple[int, int] = (3, 6),
+):
+    """
+    Transfer code from src_file and write to tgt_file.
+    """
+    with src_file.open("r") as f:
+        code = f.read()
+    
+    tgt_file.parent.mkdir(parents=True, exist_ok=True)
+    with tgt_file.open("w") as f:
+        f.write(transfer_code(code, target=target))
