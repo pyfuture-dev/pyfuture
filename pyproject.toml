@@ -1,18 +1,31 @@
 [project]
-name = "python-polyfill"
-version = "0.0.1"
+name = "pyfuture"
+dynamic = ["version"]
 description = ""
 authors = [
     {name = "Zhan Rongrui", email = "2742392377@qq.com"},
 ]
-dependencies = []
-requires-python = ">=3.12"
+dependencies = [
+    "libcst>=1.1.0",
+]
+requires-python = ">=3.8"
 readme = "README.md"
 license = {text = "MIT"}
 
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+[project.scripts]
+pyfuture = "pyfuture.__main__:app"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.pdm.version]
+source = "scm"
+write_to = "pyfuture/__version__.py"
+write_template = "__version__ = '{}'"
 
 [tool.pdm.build]
-editable-backend = "editables"
+includes = ["pyfuture"]
+
+[build-system]
+requires = ["pdm-backend", "pdm-pyfuture"]
+build-backend = "pdm.backend"
