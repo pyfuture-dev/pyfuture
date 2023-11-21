@@ -38,5 +38,5 @@ jobs:
         echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
         pip install pyfuture
         pyfuture transfer-dir . . --target ${{ matrix.python-version }}
-        PDM_BUILD_SCM_VERSION=$RELEASE_VERSION pdm build --no-isolation
+        PDM_BUILD_SCM_VERSION=$RELEASE_VERSION pdm build --no-isolation --no-sdist
         pdm publish --no-build
