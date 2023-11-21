@@ -15,10 +15,40 @@ on:
 permissions:
   contents: write
 jobs:
+  base-build:
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    - name: Setup PDM
+      uses: pdm-project/setup-pdm@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Build package
+      run: |
+        pdm build -v
+    - name: Upload base wheel
+      uses: actions/upload-artifact@v3
+      with:
+        name: base
+        path: dist
+    - name: Upload wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: wheels
+        path: dist
+
   build:
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -28,22 +58,27 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.12' 
+        python-version: '3.12'
     - name: Setup PDM
       uses: pdm-project/setup-pdm@v3
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Download base wheel
+      uses: actions/download-artifact@v3
+      with:
+        name: base
+        path: base-dist
     - name: Build package
       run: |
-        pip3.12 install pyfuture
-        pyfuture transfer-dir . . --target ${{ matrix.python-version }}
+        pip3.12 install base-dist/*.whl
+        python3.12 -m pyfuture transfer-dir . . --target ${{ matrix.python-version }}
         PDM_BUILD_SCM_VERSION=$RELEASE_VERSION pdm build -v --no-isolation --no-sdist
     - name: "Upload wheels"
       uses: actions/upload-artifact@v3
       with:
         name: wheels
         path: dist
-  
+
   publish-release:
     name: Upload to PyPI
     runs-on: ubuntu-latest
@@ -55,10 +90,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: wheels
-          path: wheels
+          path: dist
       - name: Publish to PyPi
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           skip-existing: true
-          packages-dir: wheels
+          packages-dir: dist
           verbose: true
