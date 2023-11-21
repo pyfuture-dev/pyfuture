@@ -33,7 +33,7 @@ jobs:
       uses: pdm-project/setup-pdm@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Publish package distributions to PyPI
+    - name: Build package
       run: |
         pip3.12 install pyfuture
         pyfuture transfer-dir . . --target ${{ matrix.python-version }}
@@ -51,13 +51,14 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Download wheels
+        uses: actions/download-artifact@v3
         with:
           name: wheels
-          path: dist
+          path: wheels
       - name: Publish to PyPi
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           skip-existing: true
-          packages-dir: dist
+          packages-dir: wheels
           verbose: true

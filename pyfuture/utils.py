@@ -25,14 +25,16 @@ def transfer_code(
     Transfer code to specified target version of python.
     """
     from .codemod import TransformTypeParametersCommand
-    assert target[0] == 3, "Only support python3"
-    new_code = transform_code(
-        transformers=[
-            TransformTypeParametersCommand(CodemodContext()),
-            # TODO: Add more codemods here
-        ],
-        code=code,
-    )
+    assert target >= (3, 8), "Only support transfer to python 3.8+"
+    new_code = code
+    if target <= (3, 11):
+        new_code = transform_code(
+            transformers=[
+                TransformTypeParametersCommand(CodemodContext()),
+                # TODO: Add more codemods here
+            ],
+            code=code,
+        )
     return new_code
 
 def transfer_file(
