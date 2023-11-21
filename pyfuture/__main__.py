@@ -13,12 +13,12 @@ def transfer(
     src_file: Path,
     tgt_file: Path, 
     *,
-    target: str = "3.6",
+    target: str = "3.8",
 ):
     """
     Transfer code from src_file and write to tgt_file.
     """
-    assert target == "3.6", "PyFuture is very early stage, not support target argument yet"
+    assert target == "3.8", "PyFuture is very early stage, not support target argument yet"
     transfer_file(src_file, tgt_file)
 
 
@@ -27,12 +27,12 @@ def watch(
     src_file: Path,
     tgt_file: Path, 
     *,
-    target: str = "3.6",
+    target: str = "3.8",
 ):
     """
     Transfer all python files in src_dir to build_dir, and watch for changes.
     """
-    assert target == "3.6", "PyFuture is very early stage, not support target argument yet"
+    assert target == "3.8", "PyFuture is very early stage, not support target argument yet"
     transfer_file(src_file, tgt_file)
 
     from watchfiles import watch, Change
@@ -51,12 +51,12 @@ def transfer_dir(
     src_dir: Path,
     build_dir: Path, 
     *,
-    target: str = "3.6",
+    target: str = "3.8",
 ):
     """
     Transfer all python files in src_dir to build_dir.
     """
-    assert target == "3.6", "PyFuture is very early stage, not support target argument yet"
+    assert target == "3.8", "PyFuture is very early stage, not support target argument yet"
 
     for src_file in src_dir.glob("**/*.py"):
         tgt_file = build_dir/src_file.relative_to(src_dir)
@@ -68,12 +68,12 @@ def watch_dir(
     src_dir: Path,
     build_dir: Path, 
     *,
-    target: str = "3.6",
+    target: str = "3.8",
 ):
     """
     Transfer all python files in src_dir to build_dir, and watch for changes.
     """
-    assert target == "3.6", "PyFuture is very early stage, not support target argument yet"
+    assert target == "3.8", "PyFuture is very early stage, not support target argument yet"
     transfer_dir(src_dir, build_dir, target=target)
 
     from watchfiles import watch, Change, PythonFilter
