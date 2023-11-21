@@ -51,11 +51,6 @@ jobs:
       uses: pdm-project/setup-pdm@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Download base wheel
-      uses: actions/download-artifact@v3
-      with:
-        name: base
-        path: base-dist
     - name: Build package
       run: |
         pip3.12 install .
