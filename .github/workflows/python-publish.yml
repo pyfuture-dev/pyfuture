@@ -53,8 +53,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Build package
       run: |
-        pip3.12 install .
-        python3.12 -m pyfuture transfer-dir . . --target ${{ matrix.python-version }}
+        pip3.12 install -e .
+        python3.12 -m pyfuture transfer-dir pyfuture/ pyfuture/ --target ${{ matrix.python-version }}
         PDM_BUILD_SCM_VERSION=$RELEASE_VERSION pdm build -v --no-sdist
     - name: "Upload wheels"
       uses: actions/upload-artifact@v3
