@@ -30,4 +30,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Publish package distributions to PyPI
-      run: pdm publish
+      run: |
+        pdm install
+        pdm build --no-isolation
+        pdm publish --no-build

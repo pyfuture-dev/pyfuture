@@ -12,6 +12,10 @@ requires-python = ">=3.8"
 readme = "README.md"
 license = {text = "MIT"}
 
+[project.urls]
+Homepage = "https://pypi.org/project/pyfuture"
+Repository = "https://github.com/zrr-lab/pyfuture.git"
+
 [project.scripts]
 pyfuture = "pyfuture.__main__:app"
 
@@ -27,5 +31,5 @@ write_template = "__version__ = '{}'"
 includes = ["pyfuture"]
 
 [build-system]
-requires = ["pdm-backend", "pdm-pyfuture"]
+requires = ["pdm-backend"]
 build-backend = "pdm.backend"
