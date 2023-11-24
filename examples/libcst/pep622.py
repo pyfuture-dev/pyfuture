@@ -95,14 +95,14 @@ class RemoveMatchCommand(VisitorBasedCodemodCommand):
                 and isinstance(zero_case.pattern, cst.MatchAs)
                 and zero_case.pattern.pattern is None
             ):
-                breakpoint()
+                # replace match
+                # TODO(gouzil): format
                 new_node = list(body_scope.node.body.body)
                 new_node.remove(body)
                 for b in zero_case.body.body:
                     new_node.append(b)
                 root_if = body_scope.node.body.with_changes(body=new_node)
                 replacemences[node] = body_scope.node.with_changes(body=root_if)
-                breakpoint()
             else:
                 breakpoint()
                 # root_if = None
@@ -138,9 +138,8 @@ class RemoveMatchCommand(VisitorBasedCodemodCommand):
         body = self.node_to_body.get(original_node, None)
         if body is None:
             return updated_node
-        breakpoint()
 
-        return FlattenSentinel([original_node, body])
+        return FlattenSentinel([body])
 
 
 module = cst.parse_module(
