@@ -86,7 +86,17 @@ def match_op_selector(arg_list: list[Any]):
     assert len(arg_list) == 2
     breakpoint()
     # left: cst.CSTNode,node: cst.CSTNode
-    return cst.Is()
+    match arg_list:
+        case (
+            [cst.SimpleString(), cst.SimpleString()]
+            | [cst.Name(), cst.SimpleString()]
+            | [cst.SimpleString(), cst.Name()]
+        ):
+            op = cst.Equal()
+        case _:
+            op = cst.Is()
+
+    return op
 
 
 def replace_func_body(node: FunctionDef, new_body: FunctionDef) -> FunctionDef:
