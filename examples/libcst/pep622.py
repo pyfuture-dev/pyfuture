@@ -22,11 +22,33 @@ class ReplaceNodes(cst.CSTTransformer):
         return self.replacements.get(original_node, updated_node)
 
 
-def match_transform(left: cst.CSTNode, case: cst.MatchCase):
+def match_transform(left: cst.CSTNode, case: cst.MatchCase, root_if: cst.If) -> cst.If:
+    breakpoint()
     match case.pattern:
-        case cst.MatchAs:
-            pass
-        case cst.MatchClass:
+        case cst.MatchAs():
+            """
+                case _
+            """
+            if case.pattern.pattern is None:
+                root_if = root_if.with_changes(
+                    orelse=cst.Else(body=case.body),
+                )
+            # TODO(gouzil): case [x] if x>0
+            # root_if = root_if.with_changes(
+            #     orelse=cst.If(
+            #         test=cst.Comparison(
+            #             left=left,
+            #             comparisons=[
+            #                 cst.ComparisonTarget(
+            #                     operator=match_op_selector([left, case.pattern]),
+            #                     comparator=case.pattern.pattern,
+            #                 )
+            #             ],
+            #         ),
+            #         body=,
+            #     )
+            # )
+        case cst.MatchClass():
             pass
         case cst.MatchKeywordElement:
             pass
@@ -57,9 +79,13 @@ def match_transform(left: cst.CSTNode, case: cst.MatchCase):
             pass
         case _:
             RuntimeError(f"no support type: {case.pattern}")
+    return root_if
 
 
-def match_op_selector(node: cst.CSTNode):
+def match_op_selector(arg_list: list[Any]):
+    assert len(arg_list) == 2
+    breakpoint()
+    # left: cst.CSTNode,node: cst.CSTNode
     return cst.Is()
 
 
@@ -73,6 +99,24 @@ def replace_func_body(node: FunctionDef, new_body: FunctionDef) -> FunctionDef:
     return body
 
 
+# TODO(gouzil): format
+def replace_match_node(
+    body_scope: Scope,
+    match_body,
+    zero_case,
+    root_if: cst.If | None = None,
+) -> FunctionDef:
+    new_body_code = list(body_scope.node.body.body)
+    new_body_code.remove(match_body)
+    if root_if is None:
+        for b in zero_case.body.body:
+            new_body_code.append(b)
+    else:
+        new_body_code.append(root_if)
+    root_if = body_scope.node.body.with_changes(body=new_body_code)
+    return body_scope.node.with_changes(body=root_if)
+
+
 class RemoveMatchCommand(VisitorBasedCodemodCommand):
     METADATA_DEPENDENCIES = (ScopeProvider,)
 
@@ -81,8 +125,6 @@ class RemoveMatchCommand(VisitorBasedCodemodCommand):
         super().__init__(context)
 
     def visit_FunctionDef(self, node: FunctionDef) -> bool | None:
-        # node.body.body
-
         body_scope = self.get_metadata(ScopeProvider, node.body)
         assert isinstance(body_scope, Scope)
         replacemences = {}
@@ -96,38 +138,42 @@ class RemoveMatchCommand(VisitorBasedCodemodCommand):
                 and zero_case.pattern.pattern is None
             ):
                 # replace match
-                # TODO(gouzil): format
-                new_node = list(body_scope.node.body.body)
-                new_node.remove(body)
-                for b in zero_case.body.body:
-                    new_node.append(b)
-                root_if = body_scope.node.body.with_changes(body=new_node)
-                replacemences[node] = body_scope.node.with_changes(body=root_if)
+                replacemences[node] = replace_match_node(
+                    body_scope,
+                    body,
+                    zero_case,
+                    None,
+                )
             else:
-                breakpoint()
-                # root_if = None
                 root_if = cst.If(
                     test=cst.Comparison(
                         left=body.subject,
                         comparisons=[
                             cst.ComparisonTarget(
-                                operator=match_op_selector(zero_case),
+                                operator=match_op_selector(
+                                    [body.subject, zero_case.pattern.value]
+                                ),
                                 comparator=zero_case.pattern.value,
                             )
                         ],
                     ),
                     body=zero_case.body,
                 )
-                breakpoint()
                 for cs in body.cases:
-                    match_transform(body.subject, cs)
-                    breakpoint()
-                replacemences[body] = root_if
-            # breakpoint()
+                    root_if: cst.If = match_transform(body.subject, cs, root_if)
+                breakpoint()
+                # replace match
+                replacemences[node] = replace_match_node(
+                    body_scope,
+                    body,
+                    zero_case,
+                    root_if,
+                )
+
         new_node = node.visit(ReplaceNodes(replacemences))
+
         assert isinstance(new_node, FunctionDef)
 
-        breakpoint()
         self.node_to_body[node] = new_node
 
         return False
@@ -149,8 +195,8 @@ def test():
     i = "name"
 
     match i:
-        # case "test":
-        #     print(i)
+        case "test":
+            print(i+"123")
         # case "test1":
         #     print(i+"123")
         # case i:
@@ -165,7 +211,7 @@ test()
 
 # print(module)
 wrapper = cst.MetadataWrapper(module)
-print(wrapper.module.code)
+# print(wrapper.module.code)
 # exec(module.code)
 modified_module = wrapper.visit(RemoveMatchCommand(CodemodContext()))
 print(modified_module.code)
