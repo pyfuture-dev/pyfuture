@@ -22,69 +22,88 @@ class ReplaceNodes(cst.CSTTransformer):
         return self.replacements.get(original_node, updated_node)
 
 
-def match_transform(left: cst.CSTNode, case: cst.MatchCase, root_if: cst.If) -> cst.If:
-    breakpoint()
-    match case.pattern:
-        case cst.MatchAs():
-            """
-                case _
-            """
-            if case.pattern.pattern is None:
-                root_if = root_if.with_changes(
-                    orelse=cst.Else(body=case.body),
+def match_transform(
+    left: cst.CSTNode,
+    case: cst.MatchCase,
+    root_if: cst.If | None,
+) -> cst.If | cst.Else | None:
+    if root_if.orelse is None:
+        # 应该没有这么多种类型
+        match case.pattern:
+            case cst.MatchAs():
+                """
+                    case _
+                """
+                if case.pattern.pattern is None:
+                    gen_if = cst.Else(body=case.body)
+                # TODO(gouzil): case [x] if x>0
+                # root_if = root_if.with_changes(
+                #     orelse=cst.If(
+                #         test=cst.Comparison(
+                #             left=left,
+                #             comparisons=[
+                #                 cst.ComparisonTarget(
+                #                     operator=match_op_selector([left, case.pattern]),
+                #                     comparator=case.pattern.pattern,
+                #                 )
+                #             ],
+                #         ),
+                #         body=,
+                #     )
+                # )
+            case cst.MatchClass():
+                pass
+            case cst.MatchKeywordElement:
+                pass
+            case cst.MatchList():
+                pass
+            case cst.MatchMapping():
+                pass
+            case cst.MatchMappingElement:
+                pass
+            case cst.MatchOr():
+                pass
+            case cst.MatchOrElement:
+                pass
+            case cst.MatchPattern:
+                pass
+            case cst.MatchSequence():
+                pass
+            case cst.MatchSequenceElement:
+                pass
+            case cst.MatchSingleton():
+                pass
+            case cst.MatchStar:
+                pass
+            case cst.MatchTuple():
+                pass
+            case cst.MatchValue():
+                gen_if = cst.If(
+                    test=cst.Comparison(
+                        left=left,
+                        comparisons=[
+                            cst.ComparisonTarget(
+                                operator=match_op_selector([left, case.pattern]),
+                                comparator=case.pattern.value,
+                            )
+                        ],
+                    ),
+                    body=case.body,
                 )
-            # TODO(gouzil): case [x] if x>0
-            # root_if = root_if.with_changes(
-            #     orelse=cst.If(
-            #         test=cst.Comparison(
-            #             left=left,
-            #             comparisons=[
-            #                 cst.ComparisonTarget(
-            #                     operator=match_op_selector([left, case.pattern]),
-            #                     comparator=case.pattern.pattern,
-            #                 )
-            #             ],
-            #         ),
-            #         body=,
-            #     )
-            # )
-        case cst.MatchClass():
-            pass
-        case cst.MatchKeywordElement:
-            pass
-        case cst.MatchList:
-            pass
-        case cst.MatchMapping:
-            pass
-        case cst.MatchMappingElement:
-            pass
-        case cst.MatchOr:
-            pass
-        case cst.MatchOrElement:
-            pass
-        case cst.MatchPattern:
-            pass
-        case cst.MatchSequence:
-            pass
-        case cst.MatchSequenceElement:
-            pass
-        case cst.MatchSingleton:
-            pass
-        case cst.MatchStar:
-            pass
-        case cst.MatchTuple:
-            pass
-        case cst.MatchValue:
-            # cst.If
-            pass
-        case _:
-            RuntimeError(f"no support type: {case.pattern}")
-    return root_if
+                breakpoint()
+            case _:
+                RuntimeError(f"no support type: {case.pattern}")
+        return root_if.with_changes(orelse=gen_if)
+    else:
+        return match_transform(
+            left=left,
+            case=case,
+            root_if=root_if.orelse,
+        )
 
 
 def match_op_selector(arg_list: list[Any]):
     assert len(arg_list) == 2
-    breakpoint()
     # left: cst.CSTNode,node: cst.CSTNode
     match arg_list:
         case (
@@ -169,8 +188,17 @@ class RemoveMatchCommand(VisitorBasedCodemodCommand):
                     ),
                     body=zero_case.body,
                 )
-                for cs in body.cases:
-                    root_if: cst.If = match_transform(body.subject, cs, root_if)
+                for cs in body.cases[1:]:
+                    breakpoint()
+                    root_if: cst.If = root_if.with_changes(
+                        orelse=match_transform(
+                            body.subject,
+                            cs,
+                            root_if,
+                        )
+                    )
+                    breakpoint()
+
                 breakpoint()
                 # replace match
                 replacemences[node] = replace_match_node(
@@ -207,8 +235,8 @@ def test():
     match i:
         case "test":
             print(i+"123")
-        # case "test1":
-        #     print(i+"123")
+        case "test1":
+            print(i)
         # case i:
         #     print(i)
         case _:
