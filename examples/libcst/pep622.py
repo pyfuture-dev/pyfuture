@@ -78,12 +78,15 @@ def match_transform(
             case cst.MatchTuple():
                 pass
             case cst.MatchValue():
+                """
+                case "test":
+                """
                 gen_if = cst.If(
                     test=cst.Comparison(
                         left=left,
                         comparisons=[
                             cst.ComparisonTarget(
-                                operator=match_op_selector([left, case.pattern]),
+                                operator=match_op_selector([left, case.pattern.value]),
                                 comparator=case.pattern.value,
                             )
                         ],
@@ -105,12 +108,20 @@ def match_transform(
 def match_op_selector(arg_list: list[Any]):
     assert len(arg_list) == 2
     # left: cst.CSTNode,node: cst.CSTNode
+    breakpoint()
     match arg_list:
         case (
             [cst.SimpleString(), cst.SimpleString()]
             | [cst.Name(), cst.SimpleString()]
             | [cst.SimpleString(), cst.Name()]
+            | [cst.Name(), cst.Integer()]
+            | [cst.Integer(), cst.Name()]
         ):
+            """
+            demo:
+                "test" == "test"
+                "test" == 123
+            """
             op = cst.Equal()
         case _:
             op = cst.Is()
@@ -237,6 +248,8 @@ def test():
             print(i+"123")
         case "test1":
             print(i)
+        case 123:
+            print(123)
         # case i:
         #     print(i)
         case _:
@@ -253,4 +266,4 @@ wrapper = cst.MetadataWrapper(module)
 # exec(module.code)
 modified_module = wrapper.visit(RemoveMatchCommand(CodemodContext()))
 print(modified_module.code)
-# exec(modified_module.code)
+exec(modified_module.code)
