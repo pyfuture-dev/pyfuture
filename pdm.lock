@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["cross_platform"]
 lock_version = "4.4"
-content_hash = "sha256:5b92df71ae1a4ac5299ab7de7965ac3952d2a0f4cd8b8bf162cd60c3b72b5e8d"
+content_hash = "sha256:cad7d08ec49fa4089859fcf35b57ef6fa84f794198fa8fd5f976fc3098199072"
 
 [[package]]
 name = "libcst"
