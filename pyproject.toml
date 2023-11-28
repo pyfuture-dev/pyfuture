@@ -25,7 +25,7 @@ pyfuture = "pyfuture.__main__:app"
 [tool.pdm.dev-dependencies]
 test = [
     "pytest",
-    "converage",
+    "coverage",
 ]
 
 [tool.pdm.version]
