@@ -114,7 +114,6 @@ def match_transform(
                 RuntimeError(f"no support type: {case.pattern}")
         return root_if.with_changes(orelse=gen_if)
     else:
-        # TODO(gouzil): need deduplication
         return root_if.with_changes(
             orelse=match_transform(
                 left=left,
@@ -219,12 +218,10 @@ class RemoveMatchCommand(VisitorBasedCodemodCommand):
                     body=zero_case.body,
                 )
                 for cs in body.cases[1:]:
-                    root_if: cst.If = root_if.with_changes(
-                        orelse=match_transform(
-                            body.subject,
-                            cs,
-                            root_if,
-                        )
+                    root_if = match_transform(
+                        body.subject,
+                        cs,
+                        root_if,
                     )
 
                 breakpoint()
