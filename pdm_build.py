@@ -1,5 +1,8 @@
-from pdm.backend.base import Context
+from __future__ import annotations
+
 from pathlib import Path
+
+from pdm.backend.base import Context
 
 
 def pdm_build_hook_enabled(context: Context):

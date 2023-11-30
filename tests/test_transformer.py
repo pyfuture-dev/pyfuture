@@ -1,5 +1,8 @@
-from pyfuture.transformer import ReplaceTransformer
+from __future__ import annotations
+
 import libcst as cst
+
+from pyfuture.transformer import ReplaceTransformer
 
 
 def test_transformers():
