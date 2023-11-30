@@ -29,13 +29,29 @@ def match_transform(
 ) -> cst.If | cst.Else | None:
     if root_if.orelse is None:
         # 应该没有这么多种类型
+        breakpoint()
         match case.pattern:
             case cst.MatchAs():
                 """
                     case _
                 """
-                if case.pattern.pattern is None:
+                if case.pattern.pattern is None and case.pattern.name is None:
                     gen_if = cst.Else(body=case.body)
+                elif case.pattern.name is not None:
+                    gen_if = cst.If(
+                        test=cst.Comparison(
+                            left=left,
+                            comparisons=[
+                                cst.ComparisonTarget(
+                                    operator=match_op_selector(
+                                        [left, case.pattern.name]
+                                    ),
+                                    comparator=case.pattern.name,
+                                )
+                            ],
+                        ),
+                        body=case.body,
+                    )
                 # TODO(gouzil): case [x] if x>0
                 # root_if = root_if.with_changes(
                 #     orelse=cst.If(
@@ -81,6 +97,7 @@ def match_transform(
                 """
                 case "test":
                 """
+                breakpoint()
                 gen_if = cst.If(
                     test=cst.Comparison(
                         left=left,
@@ -93,22 +110,24 @@ def match_transform(
                     ),
                     body=case.body,
                 )
-                breakpoint()
             case _:
                 RuntimeError(f"no support type: {case.pattern}")
         return root_if.with_changes(orelse=gen_if)
     else:
-        return match_transform(
-            left=left,
-            case=case,
-            root_if=root_if.orelse,
+        # TODO(gouzil): need deduplication
+        return root_if.with_changes(
+            orelse=match_transform(
+                left=left,
+                case=case,
+                root_if=root_if.orelse,
+            )
         )
 
 
 def match_op_selector(arg_list: list[Any]):
     assert len(arg_list) == 2
     # left: cst.CSTNode,node: cst.CSTNode
-    breakpoint()
+    # breakpoint()
     match arg_list:
         case (
             [cst.SimpleString(), cst.SimpleString()]
@@ -200,7 +219,6 @@ class RemoveMatchCommand(VisitorBasedCodemodCommand):
                     body=zero_case.body,
                 )
                 for cs in body.cases[1:]:
-                    breakpoint()
                     root_if: cst.If = root_if.with_changes(
                         orelse=match_transform(
                             body.subject,
@@ -208,7 +226,6 @@ class RemoveMatchCommand(VisitorBasedCodemodCommand):
                             root_if,
                         )
                     )
-                    breakpoint()
 
                 breakpoint()
                 # replace match
@@ -242,12 +259,17 @@ module = cst.parse_module(
 
 def test():
     i = "name"
+    test4 = "test5"
 
     match i:
-        case "test":
-            print(i+"123")
         case "test1":
+            print(i+"123")
+        case "test2":
             print(i)
+        case "test3":
+            print(i)
+        case test4:
+            print(1234)
         case 123:
             print(123)
         # case i:
