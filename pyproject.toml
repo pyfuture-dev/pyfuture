@@ -22,6 +22,12 @@ pyfuture = "pyfuture.__main__:app"
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]
 
+[tool.pdm.dev-dependencies]
+test = [
+    "pytest",
+    "coverage",
+]
+
 [tool.pdm.version]
 source = "scm"
 write_to = "pyfuture/__version__.py"
