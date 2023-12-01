@@ -29,7 +29,7 @@ def match_transform(
 ) -> cst.If | cst.Else | None:
     if root_if.orelse is None:
         # 应该没有这么多种类型
-        breakpoint()
+        # breakpoint()
         match case.pattern:
             case cst.MatchAs():
                 """
@@ -53,22 +53,26 @@ def match_transform(
                         body=case.body,
                     )
                 # TODO(gouzil): case [x] if x>0
-                # root_if = root_if.with_changes(
-                #     orelse=cst.If(
-                #         test=cst.Comparison(
-                #             left=left,
-                #             comparisons=[
-                #                 cst.ComparisonTarget(
-                #                     operator=match_op_selector([left, case.pattern]),
-                #                     comparator=case.pattern.pattern,
-                #                 )
-                #             ],
-                #         ),
-                #         body=,
-                #     )
-                # )
             case cst.MatchClass():
-                pass
+                """
+                class demo:
+                    pass
+
+                case demo():
+                    pass
+                """
+                gen_if = cst.If(
+                    test=cst.Call(
+                        func=cst.Name(value="isinstance"),
+                        args=[
+                            cst.Arg(value=left),
+                            cst.Arg(value=case.pattern.cls),
+                        ],
+                    ),
+                    body=case.body,
+                )
+                breakpoint()
+
             case cst.MatchKeywordElement:
                 pass
             case cst.MatchList():
@@ -97,7 +101,6 @@ def match_transform(
                 """
                 case "test":
                 """
-                breakpoint()
                 gen_if = cst.If(
                     test=cst.Comparison(
                         left=left,
@@ -253,27 +256,33 @@ class RemoveMatchCommand(VisitorBasedCodemodCommand):
 
 module = cst.parse_module(
     """
+class test6:
+    pass
 
 def test():
-    i = "name"
+    # i = "name"
+    i = test6()
     test4 = "test5"
 
     match i:
         case "test1":
-            print(i+"123")
+            print("test1"+"123")
         case "test2":
-            print(i)
+            print("test2")
         case "test3":
-            print(i)
+            print("test3")
         case test4:
-            print(1234)
+            print("test4")
         case 123:
             print(123)
+        case test6():
+            print("test6")
         # case i:
         #     print(i)
         case _:
             print(111)
             print(222)
+            print("_")
 
 test()
 """
