@@ -32,5 +32,5 @@ jobs:
     - name: Publish package distributions to PyPI
       run: |
         pdm install
-        pdm build --no-isolation
+        PDM_BUILD_SCM_VERSION=${{ github.ref }} pdm build --no-isolation
         pdm publish --no-build
