@@ -1,6 +1,9 @@
-from libcst.codemod import CodemodContext, Codemod
-import libcst as cst
+from __future__ import annotations
+
 from pathlib import Path
+
+import libcst as cst
+from libcst.codemod import Codemod, CodemodContext
 
 
 def transform_code(
@@ -25,6 +28,7 @@ def transfer_code(
     Transfer code to specified target version of python.
     """
     from .codemod import TransformTypeParametersCommand
+
     assert target[0] == 3, "Only support python3"
     new_code = transform_code(
         transformers=[
@@ -34,6 +38,7 @@ def transfer_code(
         code=code,
     )
     return new_code
+
 
 def transfer_file(
     src_file: Path,
@@ -46,7 +51,7 @@ def transfer_file(
     """
     with src_file.open("r") as f:
         code = f.read()
-    
+
     tgt_file.parent.mkdir(parents=True, exist_ok=True)
     with tgt_file.open("w") as f:
         f.write(transfer_code(code, target=target))
