@@ -27,12 +27,13 @@ def transfer_code(
     """
     Transfer code to specified target version of python.
     """
-    from .codemod import TransformTypeParametersCommand
+    from .codemod import TransformMatchCommand, TransformTypeParametersCommand
 
     assert target[0] == 3, "Only support python3"
     new_code = transform_code(
         transformers=[
             TransformTypeParametersCommand(CodemodContext()),
+            TransformMatchCommand(CodemodContext()),
             # TODO: Add more codemods here
         ],
         code=code,
