@@ -22,3 +22,8 @@ repos:
     rev: 2.10.4
     hooks:
       - id: pdm-lock-check
+
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.339
+    hooks:
+    - id: pyright
