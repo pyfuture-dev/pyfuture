@@ -1,17 +1,20 @@
+from __future__ import annotations
+
+from typing import Any
+
 import libcst as cst
+from libcst import (
+    BaseStatement,
+    ClassDef,
+    FunctionDef,
+)
 from libcst._flatten_sentinel import FlattenSentinel
 from libcst._removal_sentinel import RemovalSentinel
 from libcst.codemod import (
     CodemodContext,
     VisitorBasedCodemodCommand,
 )
-from libcst.metadata import ScopeProvider, Scope
-from libcst import (
-    BaseStatement,
-    FunctionDef,
-    ClassDef,
-)
-from typing import Any
+from libcst.metadata import Scope, ScopeProvider
 
 
 class ReplaceNodes(cst.CSTTransformer):
@@ -29,7 +32,6 @@ def match_transform(
 ) -> cst.If | cst.Else | None:
     if root_if.orelse is None:
         # 应该没有这么多种类型
-        # breakpoint()
         match case.pattern:
             case cst.MatchAs():
                 """
@@ -43,9 +45,7 @@ def match_transform(
                             left=left,
                             comparisons=[
                                 cst.ComparisonTarget(
-                                    operator=match_op_selector(
-                                        [left, case.pattern.name]
-                                    ),
+                                    operator=match_op_selector([left, case.pattern.name]),
                                     comparator=case.pattern.name,
                                 )
                             ],
@@ -71,7 +71,6 @@ def match_transform(
                     ),
                     body=case.body,
                 )
-                breakpoint()
 
             case cst.MatchKeywordElement:
                 pass
@@ -129,7 +128,6 @@ def match_transform(
 def match_op_selector(arg_list: list[Any]):
     assert len(arg_list) == 2
     # left: cst.CSTNode,node: cst.CSTNode
-    # breakpoint()
     match arg_list:
         case (
             [cst.SimpleString(), cst.SimpleString()]
@@ -211,9 +209,7 @@ class RemoveMatchCommand(VisitorBasedCodemodCommand):
                         left=body.subject,
                         comparisons=[
                             cst.ComparisonTarget(
-                                operator=match_op_selector(
-                                    [body.subject, zero_case.pattern.value]
-                                ),
+                                operator=match_op_selector([body.subject, zero_case.pattern.value]),
                                 comparator=zero_case.pattern.value,
                             )
                         ],
@@ -227,7 +223,6 @@ class RemoveMatchCommand(VisitorBasedCodemodCommand):
                         root_if,
                     )
 
-                breakpoint()
                 # replace match
                 replacemences[node] = replace_match_node(
                     body_scope,
@@ -260,9 +255,10 @@ class test6:
     pass
 
 def test():
-    # i = "name"
+    i = "name"
     i = test6()
     test4 = "test5"
+
 
     match i:
         case "test1":
@@ -277,8 +273,8 @@ def test():
             print(123)
         case test6():
             print("test6")
-        # case i:
-        #     print(i)
+        case i:
+            print(i)
         case _:
             print(111)
             print(222)
