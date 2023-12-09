@@ -46,6 +46,12 @@ required-imports = ["from __future__ import annotations"]
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401", "I002"]
 
+[tool.pyright]
+include = ["pyfuture"]
+exclude = [
+    "pyfuture/codemod/transform_match.py"
+]
+
 [tool.pdm.dev-dependencies]
 test = [
     "pytest",

@@ -26,4 +26,6 @@ repos:
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.339
     hooks:
-    - id: pyright
+      - id: pyright
+        # copy from https://github.com/RobertCraigie/pyright-python/issues/203
+        entry: bash -c 'pyright --pythonpath $(python -c "import os,sys; print(os.path.realpath(sys.executable))") "$@"' -
