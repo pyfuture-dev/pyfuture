@@ -32,4 +32,4 @@ jobs:
 
       - name: Run pre-commit
         run: |
-          pre-commit run --all-files
+          pdm run pre-commit run --all-files
