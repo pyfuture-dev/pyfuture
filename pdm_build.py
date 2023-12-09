@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from pdm.backend.hooks.base import Context
+if TYPE_CHECKING:
+    from pdm.backend.hooks.base import Context
 
 
 def pdm_build_hook_enabled(context: Context):
