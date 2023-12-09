@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 import libcst as cst
 
 
-def gen_type_param(type_param: cst.TypeVar | cst.TypeVarTuple | cst.ParamSpec, type_name: cst.Name|None=None) -> cst.SimpleStatementLine:
+def gen_type_param(
+    type_param: cst.TypeVar | cst.TypeVarTuple | cst.ParamSpec, type_name: cst.Name | None = None
+) -> cst.SimpleStatementLine:
     """
     To generate the following code:
         T = cst.TypeVar("T")
@@ -16,45 +20,53 @@ def gen_type_param(type_param: cst.TypeVar | cst.TypeVarTuple | cst.ParamSpec, t
             ]
             if bound is not None:
                 args.append(cst.Arg(bound, keyword=cst.Name("bound")))
-            return cst.SimpleStatementLine([cst.Assign(
-                targets=[cst.AssignTarget(type_name)],
-                value=cst.Call(
-                    func=cst.Name("TypeVar"),
-                    args=args,
-                ),
-            )])
-        case _: # cst.TypeVarTuple | cst.ParamSpec
-            return cst.SimpleStatementLine([cst.Assign(
-                targets=[cst.AssignTarget(type_name)],
-                value=cst.Call(
-                    func=cst.Name(type_param.__class__.__name__),
-                    args=[
-                        cst.Arg(cst.SimpleString(f'"{type_name.value}"')),
-                    ],
-                ),
-            )])
+            return cst.SimpleStatementLine(
+                [
+                    cst.Assign(
+                        targets=[cst.AssignTarget(type_name)],
+                        value=cst.Call(
+                            func=cst.Name("TypeVar"),
+                            args=args,
+                        ),
+                    )
+                ]
+            )
+        case _:  # cst.TypeVarTuple | cst.ParamSpec
+            return cst.SimpleStatementLine(
+                [
+                    cst.Assign(
+                        targets=[cst.AssignTarget(type_name)],
+                        value=cst.Call(
+                            func=cst.Name(type_param.__class__.__name__),
+                            args=[
+                                cst.Arg(cst.SimpleString(f'"{type_name.value}"')),
+                            ],
+                        ),
+                    )
+                ]
+            )
 
 
 def gen_func_wrapper(node: cst.FunctionDef, type_vars: list[cst.SimpleStatementLine]) -> cst.FunctionDef:
     wrapper = cst.FunctionDef(
-        name=cst.Name(
-            value=f'__wrapper_func_{node.name.value}'
-        ),
+        name=cst.Name(value=f"__wrapper_func_{node.name.value}"),
         params=cst.Parameters(),
         body=cst.IndentedBlock(
             body=[
                 *type_vars,
                 node,
-                cst.SimpleStatementLine([
-                    cst.Return(
-                        value=cst.Name(
-                            value=node.name.value,
-                            lpar=[],
-                            rpar=[],
-                        )
-                    ),
-                ])
+                cst.SimpleStatementLine(
+                    [
+                        cst.Return(
+                            value=cst.Name(
+                                value=node.name.value,
+                                lpar=[],
+                                rpar=[],
+                            )
+                        ),
+                    ]
+                ),
             ]
-        )
+        ),
     )
     return wrapper
