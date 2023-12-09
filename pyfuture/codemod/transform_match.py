@@ -191,7 +191,6 @@ class TransformMatchCommand(VisitorBasedCodemodCommand):
                         root_if,
                     )
 
-                breakpoint()
                 # replace match
                 replacemences[node] = replace_match_node(
                     body_scope,

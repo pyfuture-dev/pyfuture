@@ -50,6 +50,7 @@ required-imports = ["from __future__ import annotations"]
 test = [
     "pytest",
     "coverage",
+    "pre-commit"
 ]
 
 [tool.pdm.version]
