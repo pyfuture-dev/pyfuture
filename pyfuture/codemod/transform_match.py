@@ -19,72 +19,76 @@ from libcst.metadata import Scope, ScopeProvider
 from ..transformer import ReplaceTransformer
 
 
+def match_selector(left: cst.BaseExpression, case: cst.MatchCase):
+    match case.pattern:
+        case cst.MatchAs():
+            """
+                case _
+            """
+            if case.pattern.pattern is None and case.pattern.name is None:
+                gen_if = cst.Else(body=case.body)
+            elif case.pattern.name is not None:
+                gen_if = cst.If(
+                    test=cst.Comparison(
+                        left=left,
+                        comparisons=[
+                            cst.ComparisonTarget(
+                                operator=match_op_selector([left, case.pattern.name]),
+                                comparator=case.pattern.name,
+                            )
+                        ],
+                    ),
+                    body=case.body,
+                )
+            else:
+                # TODO(gouzil): case [x] if x>0
+                raise NotImplementedError()
+        case cst.MatchClass():
+            """
+            class demo:
+                pass
+
+            case demo():
+                pass
+            """
+            gen_if = cst.If(
+                test=cst.Call(
+                    func=cst.Name(value="isinstance"),
+                    args=[
+                        cst.Arg(value=left),
+                        cst.Arg(value=case.pattern.cls),
+                    ],
+                ),
+                body=case.body,
+            )
+        case cst.MatchValue():
+            """
+            case "test":
+            """
+            gen_if = cst.If(
+                test=cst.Comparison(
+                    left=left,
+                    comparisons=[
+                        cst.ComparisonTarget(
+                            operator=match_op_selector([left, case.pattern.value]),
+                            comparator=case.pattern.value,
+                        )
+                    ],
+                ),
+                body=case.body,
+            )
+        case _:
+            raise RuntimeError(f"no support type: {case.pattern}")
+    return gen_if
+
+
 def match_transform(
     left: cst.BaseExpression,
     case: cst.MatchCase,
     root_if: cst.If,
 ) -> cst.If | cst.Else:
     if root_if.orelse is None:
-        match case.pattern:
-            case cst.MatchAs():
-                """
-                    case _
-                """
-                if case.pattern.pattern is None and case.pattern.name is None:
-                    gen_if = cst.Else(body=case.body)
-                elif case.pattern.name is not None:
-                    gen_if = cst.If(
-                        test=cst.Comparison(
-                            left=left,
-                            comparisons=[
-                                cst.ComparisonTarget(
-                                    operator=match_op_selector([left, case.pattern.name]),
-                                    comparator=case.pattern.name,
-                                )
-                            ],
-                        ),
-                        body=case.body,
-                    )
-                else:
-                    # TODO(gouzil): case [x] if x>0
-                    raise NotImplementedError()
-            case cst.MatchClass():
-                """
-                class demo:
-                    pass
-
-                case demo():
-                    pass
-                """
-                gen_if = cst.If(
-                    test=cst.Call(
-                        func=cst.Name(value="isinstance"),
-                        args=[
-                            cst.Arg(value=left),
-                            cst.Arg(value=case.pattern.cls),
-                        ],
-                    ),
-                    body=case.body,
-                )
-            case cst.MatchValue():
-                """
-                case "test":
-                """
-                gen_if = cst.If(
-                    test=cst.Comparison(
-                        left=left,
-                        comparisons=[
-                            cst.ComparisonTarget(
-                                operator=match_op_selector([left, case.pattern.value]),
-                                comparator=case.pattern.value,
-                            )
-                        ],
-                    ),
-                    body=case.body,
-                )
-            case _:
-                raise RuntimeError(f"no support type: {case.pattern}")
-        return root_if.with_changes(orelse=gen_if)
+        return root_if.with_changes(orelse=match_selector(left, case))
     else:
         return root_if.with_changes(
             orelse=match_transform(
@@ -98,23 +102,25 @@ def match_transform(
 def match_op_selector(arg_list: list[Any]):
     assert len(arg_list) == 2
     # left: cst.CSTNode,node: cst.CSTNode
-    match arg_list:
-        case (
-            [cst.SimpleString(), cst.SimpleString()]
-            | [cst.Name(), cst.SimpleString()]
-            | [cst.SimpleString(), cst.Name()]
-            | [cst.Name(), cst.Integer()]
-            | [cst.Integer(), cst.Name()]
-        ):
-            """
-            demo:
-                "test" == "test"
-                "test" == 123
-            """
-            op = cst.Equal()
-        case _:
-            op = cst.Is()
+    # TODO(gouzil): Need to support MatchOr first
+    # match arg_list:
+    #     case (
+    #         [cst.SimpleString(), cst.SimpleString()]
+    #         | [cst.Name(), cst.SimpleString()]
+    #         | [cst.SimpleString(), cst.Name()]
+    #         | [cst.Name(), cst.Integer()]
+    #         | [cst.Integer(), cst.Name()]
+    #     ):
+    #         """
+    #         demo:
+    #             "test" == "test"
+    #             "test" == 123
+    #         """
+    #         op = cst.Equal()
+    #     case _:
+    #         op = cst.Is()
 
+    op = cst.Equal()
     return op
 
 
@@ -136,12 +142,14 @@ def replace_match_node(
     root_if: cst.If | None = None,
 ) -> FunctionDef:
     new_body_code = list(body_scope.node.body.body)
-    new_body_code.remove(match_body)
+    index: int = new_body_code.index(match_body)
+    del new_body_code[index]
     if root_if is None:
         for body in zero_case.body.body:
-            new_body_code.append(body)
+            new_body_code.insert(index, body)
+            index += 1
     else:
-        new_body_code.append(root_if)
+        new_body_code.insert(index, root_if)
     root_if = body_scope.node.body.with_changes(body=new_body_code)
     return body_scope.node.with_changes(body=root_if)
 
@@ -174,18 +182,7 @@ class TransformMatchCommand(VisitorBasedCodemodCommand):
                     None,
                 )
             else:
-                root_if = cst.If(
-                    test=cst.Comparison(
-                        left=body.subject,
-                        comparisons=[
-                            cst.ComparisonTarget(
-                                operator=match_op_selector([body.subject, zero_case.pattern.value]),
-                                comparator=zero_case.pattern.value,
-                            )
-                        ],
-                    ),
-                    body=zero_case.body,
-                )
+                root_if = match_selector(body.subject, zero_case)
                 for cs in body.cases[1:]:
                     root_if = match_transform(
                         body.subject,
