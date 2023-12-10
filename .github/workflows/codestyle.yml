@@ -20,7 +20,9 @@ jobs:
           python-version: "3.12"
 
       - name: Install pyfuture
-        run: pip install -e .[all]
+        run: |
+          pip install -e .[all]
+          echo $(python -c "import os,sys; print(os.path.realpath(sys.executable))") >> .pdm-python
 
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.0
