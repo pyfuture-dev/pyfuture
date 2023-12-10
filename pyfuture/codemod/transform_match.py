@@ -142,7 +142,7 @@ def replace_match_node(
     zero_case: cst.MatchCase,
     root_if: cst.If | None = None,
 ) -> FunctionDef:
-    new_body_code = list(body_scope.node.body.body)
+    new_body_code: list[cst.CSTNode] = list(body_scope.node.body.body)
     index: int = new_body_code.index(match_body)
     del new_body_code[index]
     if root_if is None:
