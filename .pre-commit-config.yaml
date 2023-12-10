@@ -28,4 +28,4 @@ repos:
     hooks:
       - id: pyright
         # copy from https://github.com/RobertCraigie/pyright-python/issues/203
-        entry: bash -c 'pyright --pythonpath $(python -c "import os,sys; print(os.path.realpath(sys.executable))") "$@"' -
+        entry: bash -c 'pyright --pythonpath $(cat .pdm-python) "$@"' -
