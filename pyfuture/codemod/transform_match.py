@@ -90,6 +90,7 @@ def match_transform(
     if root_if.orelse is None:
         return root_if.with_changes(orelse=match_selector(left, case))
     else:
+        assert isinstance(root_if.orelse, cst.If)
         return root_if.with_changes(
             orelse=match_transform(
                 left=left,
@@ -184,12 +185,14 @@ class TransformMatchCommand(VisitorBasedCodemodCommand):
             else:
                 root_if = match_selector(body.subject, zero_case)
                 for cs in body.cases[1:]:
+                    assert isinstance(root_if, cst.If)
                     root_if = match_transform(
                         body.subject,
                         cs,
                         root_if,
                     )
 
+                assert isinstance(root_if, cst.If)
                 # replace match
                 replacemences[node] = replace_match_node(
                     body_scope,
