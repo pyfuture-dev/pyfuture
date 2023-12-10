@@ -30,12 +30,22 @@ def transfer_code(
     from .codemod import TransformMatchCommand, TransformTypeParametersCommand
 
     assert target[0] == 3, "Only support python3"
+    transformers = []
+    if target[1] < 12:
+        transformers.extend(
+            [
+                TransformTypeParametersCommand(CodemodContext()),
+            ]
+        )
+    if target[1] < 10:
+        transformers.extend(
+            [
+                # TransformMatchCommand(CodemodContext()),
+            ]
+        )
+    # TODO: Add more codemods here
     new_code = transform_code(
-        transformers=[
-            TransformTypeParametersCommand(CodemodContext()),
-            TransformMatchCommand(CodemodContext()),
-            # TODO: Add more codemods here
-        ],
+        transformers=transformers,
         code=code,
     )
     return new_code

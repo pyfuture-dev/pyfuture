@@ -6,10 +6,10 @@ import libcst as cst
 from libcst import (
     BaseStatement,
     ClassDef,
+    FlattenSentinel,
     FunctionDef,
+    RemovalSentinel,
 )
-from libcst._flatten_sentinel import FlattenSentinel
-from libcst._removal_sentinel import RemovalSentinel
 from libcst.codemod import (
     CodemodContext,
     VisitorBasedCodemodCommand,
@@ -20,10 +20,10 @@ from ..transformer import ReplaceTransformer
 
 
 def match_transform(
-    left: cst.CSTNode,
+    left: cst.BaseExpression,
     case: cst.MatchCase,
-    root_if: cst.If | None,
-) -> cst.If | cst.Else | None:
+    root_if: cst.If,
+) -> cst.If | cst.Else:
     if root_if.orelse is None:
         match case.pattern:
             case cst.MatchAs():
@@ -45,7 +45,9 @@ def match_transform(
                         ),
                         body=case.body,
                     )
-                # TODO(gouzil): case [x] if x>0
+                else:
+                    # TODO(gouzil): case [x] if x>0
+                    raise NotImplementedError()
             case cst.MatchClass():
                 """
                 class demo:
@@ -81,7 +83,7 @@ def match_transform(
                     body=case.body,
                 )
             case _:
-                RuntimeError(f"no support type: {case.pattern}")
+                raise RuntimeError(f"no support type: {case.pattern}")
         return root_if.with_changes(orelse=gen_if)
     else:
         return root_if.with_changes(
@@ -129,8 +131,8 @@ def replace_func_body(node: FunctionDef, new_body: FunctionDef) -> FunctionDef:
 # TODO(gouzil): format
 def replace_match_node(
     body_scope: Scope,
-    match_body,
-    zero_case,
+    match_body: cst.Match,
+    zero_case: cst.MatchCase,
     root_if: cst.If | None = None,
 ) -> FunctionDef:
     new_body_code = list(body_scope.node.body.body)
