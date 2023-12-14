@@ -53,7 +53,7 @@ required-imports = ["from __future__ import annotations"]
 include = ["pyfuture"]
 exclude = [
     "pdm_build.py",
-    "pyfuture/codemod/transform_match.py"
+    # "pyfuture/codemod/transform_match.py"
 ]
 
 [tool.pdm.dev-dependencies]

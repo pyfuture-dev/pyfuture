@@ -14,7 +14,7 @@ from libcst.codemod import (
     CodemodContext,
     VisitorBasedCodemodCommand,
 )
-from libcst.metadata import Scope, ScopeProvider
+from libcst.metadata import FunctionScope, Scope, ScopeProvider
 
 from ..transformer import ReplaceTransformer
 
@@ -137,11 +137,12 @@ def replace_func_body(node: FunctionDef, new_body: FunctionDef) -> FunctionDef:
 
 # TODO(gouzil): format
 def replace_match_node(
-    body_scope: Scope,
+    body_scope: FunctionScope,
     match_body: cst.Match,
     zero_case: cst.MatchCase,
     root_if: cst.If | None = None,
 ) -> FunctionDef:
+    assert isinstance(body_scope.node, FunctionDef)
     new_body_code: list[cst.CSTNode] = list(body_scope.node.body.body)
     index: int = new_body_code.index(match_body)
     del new_body_code[index]
@@ -151,8 +152,8 @@ def replace_match_node(
             index += 1
     else:
         new_body_code.insert(index, root_if)
-    root_if = body_scope.node.body.with_changes(body=new_body_code)
-    return body_scope.node.with_changes(body=root_if)
+    new_root_if = body_scope.node.body.with_changes(body=new_body_code)
+    return body_scope.node.with_changes(body=new_root_if)
 
 
 class TransformMatchCommand(VisitorBasedCodemodCommand):
@@ -164,7 +165,8 @@ class TransformMatchCommand(VisitorBasedCodemodCommand):
 
     def visit_FunctionDef(self, node: FunctionDef) -> bool | None:
         body_scope = self.get_metadata(ScopeProvider, node.body)
-        assert isinstance(body_scope, Scope)
+        assert isinstance(body_scope, FunctionScope)
+        assert isinstance(body_scope.node, FunctionDef)
         replacemences = {}
         for body in body_scope.node.body.body:
             if not isinstance(body, cst.Match):
