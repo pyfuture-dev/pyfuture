@@ -62,6 +62,8 @@ test = [
     "pytest",
     "coverage"
 ]
+[tool.pdm.scripts]
+cov ={ composite = ["coverage run -m pytest tests", "coverage report -m"]}
 
 [tool.pdm.version]
 source = "scm"

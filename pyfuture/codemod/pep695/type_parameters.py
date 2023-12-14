@@ -38,8 +38,7 @@ class TransformTypeParametersCommand(VisitorBasedCodemodCommand):
         self, node: T, prefix: str = "", suffix: str = ""
     ) -> tuple[list[SimpleStatementLine], T]:
         type_params = node.type_parameters
-        if type_params is None:
-            return [], node
+        assert type_params is not None, "node which is inputted to remove_type_parameters must have type_parameters"
         statements = []
         new_node = node.with_changes(type_parameters=None)
 
