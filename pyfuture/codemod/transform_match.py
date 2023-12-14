@@ -14,7 +14,7 @@ from libcst.codemod import (
     CodemodContext,
     VisitorBasedCodemodCommand,
 )
-from libcst.metadata import FunctionScope, Scope, ScopeProvider
+from libcst.metadata import FunctionScope, ScopeProvider
 
 from ..transformer import ReplaceTransformer
 
