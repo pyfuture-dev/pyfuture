@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -8,6 +10,9 @@ if TYPE_CHECKING:
 
 
 def pdm_build_hook_enabled(context: Context):
+    if context.target == "editable" and not os.path.exists(".pdm-python"):
+        with open(".pdm-python", "w") as f:
+            f.write(sys.executable)
     return context.target == "wheel"
 
 
