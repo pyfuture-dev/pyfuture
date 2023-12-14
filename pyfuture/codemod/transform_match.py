@@ -125,16 +125,6 @@ def match_op_selector(arg_list: list[Any]):
     return op
 
 
-def replace_func_body(node: FunctionDef, new_body: FunctionDef) -> FunctionDef:
-    body = cst.FunctionDef(
-        name=node.name,
-        params=node.params,
-        decorators=node.decorators,
-        body=node.body,
-    )
-    return body
-
-
 # TODO(gouzil): format
 def replace_match_node(
     body_scope: FunctionScope,
