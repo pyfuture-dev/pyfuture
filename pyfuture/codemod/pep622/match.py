@@ -16,7 +16,7 @@ from libcst.codemod import (
 )
 from libcst.metadata import FunctionScope, ScopeProvider
 
-from ..transformer import ReplaceTransformer
+from ...transformer import ReplaceTransformer
 
 
 def match_selector(left: cst.BaseExpression, case: cst.MatchCase):
