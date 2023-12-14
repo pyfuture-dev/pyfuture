@@ -40,7 +40,7 @@ def transfer_code(
     if target[1] < 10:
         transformers.extend(
             [
-                # TransformMatchCommand(CodemodContext()),
+                TransformMatchCommand(CodemodContext()),
             ]
         )
     # TODO: Add more codemods here
