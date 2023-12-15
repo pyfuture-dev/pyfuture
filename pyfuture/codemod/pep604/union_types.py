@@ -13,7 +13,6 @@ class TransformUnionTypesCommand(VisitorBasedCodemodCommand):
         super().__init__(context)
 
     def transform_union(self, op: cst.BinaryOperation) -> cst.Subscript | None:
-        print(op)
         if not isinstance(op.operator, cst.BitOr):
             return None
         if isinstance((left := op.left), cst.BinaryOperation):
