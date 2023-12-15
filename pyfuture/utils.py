@@ -1,21 +1,29 @@
 from __future__ import annotations
 
+import contextlib
+import io
 from pathlib import Path
 
 import libcst as cst
 from libcst.codemod import Codemod, CodemodContext
 
+from .codemod.utils import RuleSet, get_transformers
 
-def transform_code(
-    transformers: list[Codemod],
+
+def apply_transformer(
+    transformers: list[type[Codemod]],
     code: str,
 ) -> str:
     """
     Transform code with some transformers, and return the transformed code.
     """
-    module = cst.parse_module(code)
-    for transformer in transformers:
-        module = transformer.transform_module(module)
+    with contextlib.redirect_stdout(io.StringIO()):
+        module = cst.parse_module(code)
+        # while True:
+        for transformer in transformers:
+            module = transformer(CodemodContext()).transform_module(module)
+            # if code == module.code:
+            #     break
     return module.code
 
 
@@ -27,24 +35,14 @@ def transfer_code(
     """
     Transfer code to specified target version of python.
     """
-    from .codemod import TransformMatchCommand, TransformTypeParametersCommand
 
     assert target[0] == 3, "Only support python3"
     transformers = []
     if target[1] < 12:
-        transformers.extend(
-            [
-                TransformTypeParametersCommand(CodemodContext()),
-            ]
-        )
+        transformers.extend(get_transformers(RuleSet.pep695))
     if target[1] < 10:
-        transformers.extend(
-            [
-                TransformMatchCommand(CodemodContext()),
-            ]
-        )
-    # TODO: Add more codemods here
-    new_code = transform_code(
+        transformers.extend(get_transformers([RuleSet.pep622, RuleSet.pep604]))
+    new_code = apply_transformer(
         transformers=transformers,
         code=code,
     )

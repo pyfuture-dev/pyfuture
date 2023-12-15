@@ -1,6 +1,41 @@
 from __future__ import annotations
 
+from enum import Enum
+from typing import Iterable
+
 import libcst as cst
+from libcst.codemod import Codemod
+
+
+class RuleSet(Enum):
+    # python 3.10+
+    pep604 = "pep604"
+    pep622 = "pep622"
+    # python 3.12+
+    pep695 = "pep695"
+
+
+def get_transformers(rule_sets: list[RuleSet] | RuleSet) -> Iterable[type[Codemod]]:
+    """
+    Get codemod transformers for specified rule set.
+    """
+    from .pep604 import TransformUnionTypesCommand
+    from .pep622 import TransformMatchCommand
+    from .pep695 import TransformTypeParametersCommand
+
+    if not isinstance(rule_sets, list):
+        rule_sets = [rule_sets]
+
+    for rule_set in rule_sets:
+        match rule_set:
+            case RuleSet.pep604:
+                yield TransformUnionTypesCommand
+            case RuleSet.pep622:
+                yield TransformMatchCommand
+            case RuleSet.pep695:
+                yield TransformTypeParametersCommand
+            case _:
+                raise ValueError(f"Unknown rule set: {rule_set}")
 
 
 def gen_type_param(

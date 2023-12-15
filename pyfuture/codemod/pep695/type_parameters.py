@@ -23,8 +23,8 @@ from libcst.codemod import (
 from libcst.codemod.visitors import AddImportsVisitor
 from libcst.metadata import Scope, ScopeProvider
 
-from ..transformer import ReplaceTransformer
-from .utils import gen_func_wrapper, gen_type_param
+from ...transformer import ReplaceTransformer
+from ..utils import gen_func_wrapper, gen_type_param
 
 
 class TransformTypeParametersCommand(VisitorBasedCodemodCommand):

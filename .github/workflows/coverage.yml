@@ -27,8 +27,7 @@ jobs:
 
       - name: Run tests and coverage
         run: |
-          pdm run coverage run -m pytest tests
-          pdm run coverage html --show-contexts --title "Coverage for ${{ github.sha }}"
+          pdm run cov --title "Coverage for ${{ github.sha }}"
 
       - name: Store coverage HTML
         uses: actions/upload-artifact@v3

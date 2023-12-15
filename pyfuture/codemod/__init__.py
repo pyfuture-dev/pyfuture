@@ -1,2 +1,2 @@
-from .transform_match import TransformMatchCommand
-from .transform_type_parameters import TransformTypeParametersCommand
+from .pep622 import TransformMatchCommand
+from .pep695 import TransformTypeParametersCommand

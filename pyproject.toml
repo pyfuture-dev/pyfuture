@@ -53,15 +53,17 @@ required-imports = ["from __future__ import annotations"]
 [tool.pyright]
 include = ["pyfuture"]
 exclude = [
-    "pdm_build.py",
-    # "pyfuture/codemod/transform_match.py"
+    "pdm_build.py"
 ]
 
 [tool.pdm.dev-dependencies]
 test = [
     "pytest",
+    "pytest-cov",
     "coverage"
 ]
+[tool.pdm.scripts]
+cov ={ composite = ["pytest tests --cov=pyfuture --cov-context=test", "coverage html --show-contexts {args}"]}
 
 [tool.pdm.version]
 source = "scm"
