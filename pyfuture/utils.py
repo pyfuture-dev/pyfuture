@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import contextlib
+import io
 from pathlib import Path
 
 import libcst as cst
@@ -15,9 +17,13 @@ def apply_transformer(
     """
     Transform code with some transformers, and return the transformed code.
     """
-    module = cst.parse_module(code)
-    for transformer in transformers:
-        module = transformer(CodemodContext()).transform_module(module)
+    with contextlib.redirect_stdout(io.StringIO()):
+        module = cst.parse_module(code)
+        # while True:
+        for transformer in transformers:
+            module = transformer(CodemodContext()).transform_module(module)
+            # if code == module.code:
+            #     break
     return module.code
 
 
