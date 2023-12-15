@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import libcst as cst
+from libcst import matchers as m
 from libcst.codemod import CodemodContext, VisitorBasedCodemodCommand
 from libcst.codemod.visitors import AddImportsVisitor
 from libcst.metadata import ScopeProvider
@@ -37,10 +38,7 @@ class TransformUnionTypesCommand(VisitorBasedCodemodCommand):
         )
 
     def leave_Call(self, original_node: cst.Call, updated_node: cst.Call):
-        if cst.ensure_type(original_node.func, cst.Name).value not in [
-            "isinstance",
-            "issubclass",
-        ]:
+        if not m.matches(original_node.func, m.Name("isinstance") | m.Name("issubclass")):
             return updated_node
         args = original_node.args
 
