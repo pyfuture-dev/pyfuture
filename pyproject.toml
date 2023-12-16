@@ -53,7 +53,8 @@ required-imports = ["from __future__ import annotations"]
 [tool.pyright]
 include = ["pyfuture"]
 exclude = [
-    "pdm_build.py"
+    "pdm_build.py",
+    "pyfuture/hooks/",
 ]
 
 [tool.pdm.dev-dependencies]
@@ -77,5 +78,5 @@ includes = ["pyfuture"]
 target = "py38"
 
 [build-system]
-requires = ["pdm-backend", "pdm-pyfuture"]
+requires = ["pdm-backend"]
 build-backend = "pdm.backend"

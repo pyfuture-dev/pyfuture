@@ -9,7 +9,7 @@ on:
 permissions:
   contents: write
 jobs:
-  deploy:
+  build:
     strategy:
       matrix:
         python-version: [3.12]
@@ -25,5 +25,5 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Publish package distributions to PyPI
       run: |
-        pdm install --no-isolation
+        pdm install
         pdm build --no-isolation
