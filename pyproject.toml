@@ -73,6 +73,9 @@ write_template = "__version__ = '{}'"
 [tool.pdm.build]
 includes = ["pyfuture"]
 
+[tool.pdm.build.hooks.pyfuture]
+target = "py38"
+
 [build-system]
-requires = ["pdm-backend"]
+requires = ["pdm-backend", "pdm-pyfuture"]
 build-backend = "pdm.backend"
