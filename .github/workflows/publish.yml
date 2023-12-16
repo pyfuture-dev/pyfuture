@@ -23,14 +23,18 @@ jobs:
       with:
         python-version: "3.12"
     - name: Build package 👷‍♂️
+      env:
+        PDM_IGNORE_SCM_VERSION: ${{ github.ref_name }}
+        PYFUTURE_TARGET: ${{ matrix.target-version }}
       run: |
         pdm install
-        PDM_BUILD_SCM_VERSION=${{ github.ref_name }} PYFUTURE_TARGET=${{ matrix.target-version }} pdm build --no-isolation
+        pdm build --no-isolation --no-sdist
     - name: Upload wheels 👷‍♂️
       uses: actions/upload-artifact@v3
       with:
         name: wheels
         path: dist
+
   publish-release:
     runs-on: ubuntu-latest
     permissions:
