@@ -4,7 +4,6 @@ on:
   push:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
-
 permissions:
   contents: write
 jobs:
@@ -55,6 +54,7 @@ jobs:
     - name: Publish GitHub Release 📝
       uses: softprops/action-gh-release@v1
       with:
-        name: "PyFuture Release ${{ github.ref }}"
+        name: "PyFuture Release ${{ github.ref_name }}"
+        token: ${{ secrets.RELEASE_TOKEN }}
         files: |
           dist/*
