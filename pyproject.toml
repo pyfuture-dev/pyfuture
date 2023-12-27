@@ -9,6 +9,7 @@ dependencies = [
     "libcst>=1.1.0",
     "typer>=0.9.0",
     "loguru>=0.7.2",
+    "rich>=13.7.0",
 ]
 requires-python = ">=3.8"
 readme = "README.md"
@@ -34,11 +35,15 @@ target-version = "py311"
 [tool.ruff.lint]
 select = [
   "F",
+  "SIM",
+  "UP",
+  "FA",   # flake8-annotations
   "I",    # isort
   "B",    # flake8-bugbear
   "C4",   # flake8-comprehensions
   "PGH",  # pygrep-hooks
   "RUF",  # ruff
+  "E",    # pycodestyle
   "W",    # pycodestyle
   "YTT",  # flake8-2020
 ]
