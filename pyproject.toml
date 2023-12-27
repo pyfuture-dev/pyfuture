@@ -59,9 +59,10 @@ exclude = [
 
 [tool.pdm.dev-dependencies]
 test = [
+    "xdoctest",
     "pytest",
     "pytest-cov",
-    "coverage"
+    "coverage",
 ]
 [tool.pdm.scripts]
 cov ={ composite = ["pytest tests --cov=pyfuture --cov-context=test", "coverage html --show-contexts {args}"]}
@@ -73,9 +74,6 @@ write_template = "__version__ = '{}'"
 
 [tool.pdm.build]
 includes = ["pyfuture"]
-
-[tool.pdm.build.hooks.pyfuture]
-target = "py38"
 
 [build-system]
 requires = ["pdm-backend"]

@@ -5,7 +5,7 @@
 groups = ["default", "test"]
 strategy = ["cross_platform"]
 lock_version = "4.4"
-content_hash = "sha256:1a66b287d310a150374511d8fac6101dfe3db3a57a1ec09937edceed821d10ea"
+content_hash = "sha256:66bd079c942f36a22fe4562195f49989ca78f74e9ac5777bdba55c8411e65036"
 
 [[package]]
 name = "click"
@@ -396,4 +396,14 @@ summary = "A small Python utility to set file creation time on Windows"
 files = [
     {file = "win32_setctime-1.1.0-py3-none-any.whl", hash = "sha256:231db239e959c2fe7eb1d7dc129f11172354f98361c4fa2d6d2d7e278baa8aad"},
     {file = "win32_setctime-1.1.0.tar.gz", hash = "sha256:15cf5750465118d6929ae4de4eb46e8edae9a5634350c01ba582df868e932cb2"},
+]
+
+[[package]]
+name = "xdoctest"
+version = "1.1.2"
+requires_python = ">=3.6"
+summary = "A rewrite of the builtin doctest module"
+files = [
+    {file = "xdoctest-1.1.2-py3-none-any.whl", hash = "sha256:ebe133222534f09597cbe461f97cc5f95ad7b36e5d31f3437caffb9baaddbddb"},
+    {file = "xdoctest-1.1.2.tar.gz", hash = "sha256:267d3d4e362547fa917d3deabaf6888232bbf43c8d30298faeb957dbfa7e0ba3"},
 ]

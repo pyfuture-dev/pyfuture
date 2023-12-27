@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Any
 
+import libcst as cst
 from libcst import (
     Arg,
     Assign,
     AssignTarget,
     Call,
     ClassDef,
-    FlattenSentinel,
     FunctionDef,
     Index,
     Name,
@@ -28,6 +28,26 @@ from ..utils import gen_func_wrapper, gen_type_param
 
 
 class TransformTypeParametersCommand(VisitorBasedCodemodCommand):
+    """
+    Remove type parameters from node, and return a list of statements and a new node.
+
+    Example:
+    >>> transformer = TransformTypeParametersCommand(CodemodContext())
+    >>> module = cst.parse_module(\"""
+    ... def test[T: int](x: T) -> T:
+    ...     return x
+    ... \""")
+    >>> new_module = transformer.transform_module(module)
+    >>> print(new_module.code)
+    from typing import TypeVar
+    def __wrapper_func_test():
+        __test_T = TypeVar("__test_T", bound = int)
+        def test(x: __test_T) -> __test_T:
+            return x
+        return test
+    test = __wrapper_func_test()
+    """
+
     METADATA_DEPENDENCIES = (ScopeProvider,)
 
     def __init__(self, context: CodemodContext) -> None:
@@ -112,7 +132,7 @@ class TransformTypeParametersCommand(VisitorBasedCodemodCommand):
             ]
         )
 
-        return FlattenSentinel([wrapper, func])
+        return cst.FlattenSentinel([wrapper, func])
 
     def visit_ClassDef(self, node: ClassDef):
         type_params = node.type_parameters
@@ -167,7 +187,7 @@ class TransformTypeParametersCommand(VisitorBasedCodemodCommand):
             if isinstance(subnode, FunctionDef):
                 prefix = f"__{new_node.name.value}_{subnode.name.value}_"
                 sub_type_vars, new_subnode = self.remove_type_parameters(subnode, prefix=prefix)
-                replacemences[subnode] = FlattenSentinel([*sub_type_vars, new_subnode])
+                replacemences[subnode] = cst.FlattenSentinel([*sub_type_vars, new_subnode])
 
         new_node = new_node.visit(ReplaceTransformer(replacemences))
-        return FlattenSentinel([*type_vars, new_node])
+        return cst.FlattenSentinel([*type_vars, new_node])

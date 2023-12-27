@@ -27,6 +27,7 @@ jobs:
 
       - name: Run tests and coverage
         run: |
+          pdm run xdoctest ./pyfuture
           pdm run cov --title "Coverage for ${{ github.sha }}"
 
       - name: Store coverage HTML

@@ -8,6 +8,22 @@ from libcst.metadata import ScopeProvider
 
 
 class TransformUnionTypesCommand(VisitorBasedCodemodCommand):
+    """
+    Transform union types to typing.Union.
+
+    Example:
+    >>> transformer = TransformUnionTypesCommand(CodemodContext())
+    >>> module = cst.parse_module(\"""
+    ... def test(x: int | str) -> int | str:
+    ...     return x
+    ... \""")
+    >>> new_module = transformer.transform_module(module)
+    >>> print(new_module.code)
+    from typing import Union
+    def test(x: Union[int, str]) -> Union[int, str]:
+        return x
+    """
+
     METADATA_DEPENDENCIES = (ScopeProvider,)
 
     def __init__(self, context: CodemodContext) -> None:
