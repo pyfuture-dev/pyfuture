@@ -70,7 +70,7 @@ test = [
     "coverage",
 ]
 [tool.pdm.scripts]
-cov ={ composite = ["pytest tests --cov=pyfuture --cov-context=test", "coverage html --show-contexts {args}"]}
+cov ={ composite = ["pytest --cov=pyfuture --cov-context=test --xdoc ./tests ./pyfuture ", "coverage html --show-contexts {args}"]}
 
 [tool.pdm.version]
 source = "scm"
