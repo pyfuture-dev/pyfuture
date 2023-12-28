@@ -28,6 +28,9 @@ def match_selector(left: cst.BaseExpression, case: cst.MatchCase):
             if case.pattern.pattern is None and case.pattern.name is None:
                 gen_if = cst.Else(body=case.body)
             elif case.pattern.name is not None:
+                """
+                case [x] as y
+                """
                 gen_if = cst.If(
                     test=cst.Comparison(
                         left=left,
@@ -235,6 +238,20 @@ class TransformMatchCommand(VisitorBasedCodemodCommand):
     def test4():
         test_value = 123
         print("other")
+
+    >>> module = cst.parse_module(\"""
+    ... def test5():
+    ...     test_value = 123
+    ...     match test_value:
+    ...         case [x] as y:
+    ...             print("other")
+    ... \""")
+    >>> new_module = transformer.transform_module(module)
+    >>> print(new_module.code)
+    def test5():
+        test_value = 123
+        if test_value == y:
+            print("other")
     """
 
     METADATA_DEPENDENCIES = (ScopeProvider,)
