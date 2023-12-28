@@ -30,15 +30,9 @@ jobs:
           pdm run cov --title "Coverage for ${{ github.sha }}"
 
       - name: Store coverage HTML
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-html
-          path: htmlcov
-
-      - name: Store coverage HTML
         run: |
           pip install smokeshow
-          smokeshow upload cli/htmlcov
+          smokeshow upload htmlcov
         env:
           SMOKESHOW_GITHUB_STATUS_DESCRIPTION: Coverage {coverage-percentage}
           SMOKESHOW_GITHUB_COVERAGE_THRESHOLD: 50
