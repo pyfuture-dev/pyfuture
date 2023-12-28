@@ -23,19 +23,20 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pdm install -d
+        run: |
+          pdm install -d
+          pip install smokeshow
 
       - name: Run tests and coverage
         run: |
           pdm run cov --title "Coverage for ${{ github.sha }}"
 
       - name: Store coverage HTML
-        run: |
-          pip install smokeshow
-          smokeshow upload htmlcov
+        run: smokeshow upload htmlcov
         env:
           SMOKESHOW_GITHUB_STATUS_DESCRIPTION: Coverage {coverage-percentage}
           SMOKESHOW_GITHUB_COVERAGE_THRESHOLD: 50
           SMOKESHOW_GITHUB_CONTEXT: coverage
-          SMOKESHOW_GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          SMOKESHOW_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           SMOKESHOW_GITHUB_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          SMOKESHOW_AUTH_KEY: ${{ secrets.SMOKESHOW_AUTH_KEY }}
