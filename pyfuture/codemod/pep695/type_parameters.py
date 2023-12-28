@@ -46,6 +46,19 @@ class TransformTypeParametersCommand(VisitorBasedCodemodCommand):
             return x
         return test
     test = __wrapper_func_test()
+    >>> module = cst.parse_module(\"""
+    ... def test[T: int | str](x: T) -> T:
+    ...     return x
+    ... \""")
+    >>> new_module = transformer.transform_module(module)
+    >>> print(new_module.code)
+    from typing import TypeVar
+    def __wrapper_func_test():
+        __test_T = TypeVar("__test_T", bound = Union[int, str])
+        def test(x: __test_T) -> __test_T:
+            return x
+        return test
+    test = __wrapper_func_test()
     """
 
     METADATA_DEPENDENCIES = (ScopeProvider,)

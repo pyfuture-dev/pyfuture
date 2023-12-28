@@ -38,7 +38,7 @@ def print_string(s: str):
             "def test[T: int | str](x: T) -> T:\n" "    return x",
             "from typing import TypeVar\n\n"
             "def __wrapper_func_test():\n"
-            '    __test_T = TypeVar("__test_T", bound = int | str)\n'
+            '    __test_T = TypeVar("__test_T", bound = Union[int, str])\n'
             "    def test(x: __test_T) -> __test_T:\n"
             "        return x\n"
             "    return test\n"

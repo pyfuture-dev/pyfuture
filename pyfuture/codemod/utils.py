@@ -38,6 +38,31 @@ def get_transformers(rule_sets: list[RuleSet] | RuleSet) -> Iterable[type[Codemo
                 raise ValueError(f"Unknown rule set: {rule_set}")
 
 
+def transform_union(op: cst.BinaryOperation) -> cst.Subscript | None:
+    if not isinstance(op.operator, cst.BitOr):
+        return None
+    if isinstance((left := op.left), cst.BinaryOperation):
+        left = transform_union(left) or left
+    if isinstance((right := op.right), cst.BinaryOperation):
+        right = transform_union(right) or right
+    slices = [
+        cst.SubscriptElement(
+            slice=cst.Index(value=left),
+        ),
+        cst.SubscriptElement(
+            slice=cst.Index(value=right),
+        ),
+    ]
+    return cst.Subscript(
+        value=cst.Name(
+            value="Union",
+            lpar=[],
+            rpar=[],
+        ),
+        slice=slices,
+    )
+
+
 def gen_type_param(
     type_param: cst.TypeVar | cst.TypeVarTuple | cst.ParamSpec, type_name: cst.Name | None = None
 ) -> cst.SimpleStatementLine:
@@ -54,6 +79,8 @@ def gen_type_param(
                 cst.Arg(cst.SimpleString(f'"{type_name.value}"')),
             ]
             if bound is not None:
+                if isinstance(bound, cst.BinaryOperation):
+                    bound = transform_union(bound) or bound
                 args.append(cst.Arg(bound, keyword=cst.Name("bound")))
             return cst.SimpleStatementLine(
                 [
