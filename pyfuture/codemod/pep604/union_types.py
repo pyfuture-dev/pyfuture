@@ -6,7 +6,7 @@ from libcst.codemod import CodemodContext, VisitorBasedCodemodCommand
 from libcst.codemod.visitors import AddImportsVisitor
 from libcst.metadata import ScopeProvider
 
-from ..utils import transform_union
+from ..utils import transform_bit_or
 
 
 class TransformUnionTypesCommand(VisitorBasedCodemodCommand):
@@ -38,7 +38,7 @@ class TransformUnionTypesCommand(VisitorBasedCodemodCommand):
 
         if (
             isinstance(cls_info := args[1].value, cst.BinaryOperation)
-            and (cls_info := transform_union(cls_info)) is not None
+            and (cls_info := transform_bit_or(cls_info)) is not None
         ):
             return updated_node.with_changes(
                 args=[
@@ -52,7 +52,7 @@ class TransformUnionTypesCommand(VisitorBasedCodemodCommand):
     def leave_Annotation(self, original_node: cst.Annotation, updated_node: cst.Annotation):
         if (
             isinstance((op := original_node.annotation), cst.BinaryOperation)
-            and (new_annotation := transform_union(op)) is not None
+            and (new_annotation := transform_bit_or(op)) is not None
         ):
             AddImportsVisitor.add_needed_import(self.context, "typing", "Union")
             return updated_node.with_changes(annotation=new_annotation)
