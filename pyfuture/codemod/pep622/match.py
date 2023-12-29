@@ -28,6 +28,9 @@ def match_selector(left: cst.BaseExpression, case: cst.MatchCase):
             if case.pattern.pattern is None and case.pattern.name is None:
                 gen_if = cst.Else(body=case.body)
             elif case.pattern.name is not None:
+                """
+                case [x] as y
+                """
                 gen_if = cst.If(
                     test=cst.Comparison(
                         left=left,
@@ -147,6 +150,110 @@ def replace_match_node(
 
 
 class TransformMatchCommand(VisitorBasedCodemodCommand):
+    """
+    Remove math from the node and replace it with a new function
+
+    Example:
+    >>> transformer = TransformMatchCommand(CodemodContext())
+
+    >>> module = cst.parse_module(\"""
+    ... class demo:
+    ...     pass
+    ... def test1():
+    ...     test_class = demo()
+    ...     match test_class:
+    ...        case "123":
+    ...            print(123)
+    ...        case demo():
+    ...            print("demo")
+    ...        case _:
+    ...            print("other")
+    ... \""")
+    >>> new_module = transformer.transform_module(module)
+    >>> print(new_module.code)
+    class demo:
+        pass
+    def test1():
+        test_class = demo()
+        if test_class == "123":
+            print(123)
+        elif isinstance(test_class, demo):
+            print("demo")
+        else:
+            print("other")
+
+    >>> module = cst.parse_module(\"""
+    ... def test2():
+    ...     test_value = "name"
+    ...     match test_value:
+    ...        case "123":
+    ...            print(123)
+    ...        case "name":
+    ...            print("name")
+    ...        case _:
+    ...            print("other")
+    ... \""")
+    >>> new_module = transformer.transform_module(module)
+    >>> print(new_module.code)
+    def test2():
+        test_value = "name"
+        if test_value == "123":
+            print(123)
+        elif test_value == "name":
+            print("name")
+        else:
+            print("other")
+
+    >>> module = cst.parse_module(\"""
+    ... def test3():
+    ...     test_value = 123
+    ...     match test_value:
+    ...        case 123:
+    ...            print(123)
+    ...        case "name":
+    ...            print("name")
+    ...        case _:
+    ...            print("other")
+    ... \""")
+    >>> new_module = transformer.transform_module(module)
+    >>> print(new_module.code)
+    def test3():
+        test_value = 123
+        if test_value == 123:
+            print(123)
+        elif test_value == "name":
+            print("name")
+        else:
+            print("other")
+
+    >>> module = cst.parse_module(\"""
+    ... def test4():
+    ...     test_value = 123
+    ...     match test_value:
+    ...         case _:
+    ...             print("other")
+    ... \""")
+    >>> new_module = transformer.transform_module(module)
+    >>> print(new_module.code)
+    def test4():
+        test_value = 123
+        print("other")
+
+    >>> module = cst.parse_module(\"""
+    ... def test5():
+    ...     test_value = 123
+    ...     match test_value:
+    ...         case [x] as y:
+    ...             print("other")
+    ... \""")
+    >>> new_module = transformer.transform_module(module)
+    >>> print(new_module.code)
+    def test5():
+        test_value = 123
+        if test_value == y:
+            print("other")
+    """
+
     METADATA_DEPENDENCIES = (ScopeProvider,)
 
     def __init__(self, context: CodemodContext) -> None:
