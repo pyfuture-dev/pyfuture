@@ -32,7 +32,9 @@ jobs:
           pdm run cov
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4-beta
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml
+          flags: Pyfuture
+          plugins: pycoverage,compress-pycoverage
