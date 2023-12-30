@@ -39,11 +39,30 @@ def get_transformers(rule_sets: list[RuleSet] | RuleSet) -> Iterable[type[Codemo
                 yield TransformMatchCommand
             case RuleSet.pep695:
                 yield TransformTypeParametersCommand
-            case _:
+            case _:  # pragma: no cover
                 raise ValueError(f"Unknown rule set: {rule_set}")
 
 
 def transform_bit_or(op: cst.BinaryOperation, use_union: bool = True) -> cst.Subscript | cst.Tuple | None:
+    """
+    To transform bit or operation to union type.
+
+    Example:
+    >>> module = cst.parse_module(\"""
+    ... a + b
+    ... \""")
+    >>> node = module.body[0].body[0].value
+    >>> transform_bit_or(node)
+    None
+    >>> module = cst.parse_module(\"""
+    ... a | b | (c | d)
+    ... \""")
+    >>> node = module.body[0].body[0].value
+    >>> print(cst.Module([transform_bit_or(node)]).code)
+    Union[a, b, c, d]
+    >>> print(cst.Module([transform_bit_or(node, use_union=False)]).code)
+    (a, b, c, d)
+    """
     if not isinstance(op.operator, cst.BitOr):
         return None
 

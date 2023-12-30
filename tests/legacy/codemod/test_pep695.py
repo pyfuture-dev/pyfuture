@@ -20,34 +20,16 @@ def print_string(s: str):
         pytest.param(
             "def test(x: int) -> int:\n" "    return x",
             "def test(x: int) -> int:\n" "    return x",
-            id="no generic function",
+            id="function",
         ),
         pytest.param(
-            "def test[T: int](x: T) -> T:\n" "    return x",
-            "from typing import TypeVar\n"
-            "\n"
-            "def __wrapper_func_test():\n"
-            '    __test_T = TypeVar("__test_T", bound = int)\n'
-            "    def test(x: __test_T) -> __test_T:\n"
-            "        return x\n"
-            "    return test\n"
-            "test = __wrapper_func_test()",
-            id="single bound function",
-        ),
-        pytest.param(
-            "def test[T: int | str](x: T) -> T:\n" "    return x",
-            "from typing import TypeVar\n\n"
-            "def __wrapper_func_test():\n"
-            '    __test_T = TypeVar("__test_T", bound = Union[int, str])\n'
-            "    def test(x: __test_T) -> __test_T:\n"
-            "        return x\n"
-            "    return test\n"
-            "test = __wrapper_func_test()",
-            id="union bonud function",
+            "class Test: pass",
+            "class Test: pass",
+            id="class",
         ),
     ),
 )
-def test_type_parameters(src: str, expected: str):
+def test_no_generic(src: str, expected: str):
     module = cst.parse_module(src)
     new_module = TransformTypeParametersCommand(CodemodContext()).transform_module(module)
     print_string(new_module.code)

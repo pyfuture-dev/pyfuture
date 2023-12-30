@@ -34,6 +34,7 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = [
+  "Q",
   "F",
   "SIM",
   "UP",
@@ -69,8 +70,10 @@ test = [
     "pytest-cov",
     "coverage",
 ]
+backend = ["pdm-backend"]
+
 [tool.pdm.scripts]
-cov ={ composite = ["pytest --cov=pyfuture --cov-context=test --xdoc ./tests ./pyfuture ", "coverage html --show-contexts {args}"]}
+cov ={ composite = ["pytest ./tests ./pyfuture --cov=pyfuture --xdoc", "coverage xml"]}
 
 [tool.pdm.version]
 source = "scm"

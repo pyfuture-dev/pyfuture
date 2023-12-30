@@ -61,16 +61,17 @@ class TransformTypeParametersCommand(VisitorBasedCodemodCommand):
     test = __wrapper_func_test()
     >>> module = cst.parse_module(\"""
     ... class Test[T: int]:
-    ...     def test(self, x: T) -> T:
-    ...         return x
+    ...     def test[P: str](self, x: T, y: P) -> tuple[T, P]:
+    ...         return x, y
     ... \""")
     >>> new_module = transformer.transform_module(module)
     >>> print(new_module.code)
     from typing import Generic, TypeVar
     __Test_T = TypeVar("__Test_T", bound = int)
     class Test(Generic[__Test_T]):
-        def test(self, x: __Test_T) -> __Test_T:
-            return x
+        __Test_test_P = TypeVar("__Test_test_P", bound = str)
+        def test(self, x: __Test_T, y: __Test_test_P) -> tuple[__Test_T, __Test_test_P]:
+            return x, y
     """
 
     METADATA_DEPENDENCIES = (ScopeProvider,)
