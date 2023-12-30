@@ -71,7 +71,7 @@ test = [
     "coverage",
 ]
 [tool.pdm.scripts]
-cov ={ composite = ["pytest --cov=pyfuture --xdoc ./tests ./pyfuture ", "coverage xml"]}
+cov ={ composite = ["pytest ./tests ./pyfuture --cov=pyfuture --xdoc", "coverage xml"]}
 
 [tool.pdm.version]
 source = "scm"

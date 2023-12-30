@@ -25,6 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           pdm install -d
+          pdm run pip install pdm-backend
 
       - name: Run tests and coverage
         run: |
