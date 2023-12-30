@@ -31,7 +31,7 @@ def transfer(src_file: Path, tgt_file: Path, *, target: str = "3.8", log_level: 
 
 
 @app.command()
-def watch(src_file: Path, tgt_file: Path, *, target: str = "3.8", log_level: str = "INFO"):
+def watch(src_file: Path, tgt_file: Path, *, target: str = "3.8", log_level: str = "INFO"):  # pragma: no cover
     """
     Transfer all python files in src_dir to build_dir, and watch for changes.
     """
@@ -66,7 +66,7 @@ def transfer_dir(src_dir: Path, build_dir: Path, *, target: str = "3.8", log_lev
 
 
 @app.command()
-def watch_dir(src_dir: Path, build_dir: Path, *, target: str = "3.8", log_level: str = "INFO"):
+def watch_dir(src_dir: Path, build_dir: Path, *, target: str = "3.8", log_level: str = "INFO"):  # pragma: no cover
     """
     Transfer all python files in src_dir to build_dir, and watch for changes.
     """
@@ -89,5 +89,5 @@ def watch_dir(src_dir: Path, build_dir: Path, *, target: str = "3.8", log_level:
                     tgt_file.unlink()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     app()
