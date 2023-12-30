@@ -70,6 +70,8 @@ test = [
     "pytest-cov",
     "coverage",
 ]
+backend = ["pdm-backend"]
+
 [tool.pdm.scripts]
 cov ={ composite = ["pytest ./tests ./pyfuture --cov=pyfuture --xdoc", "coverage xml"]}
 
