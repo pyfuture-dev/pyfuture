@@ -15,6 +15,17 @@ requires-python = ">=3.8"
 readme = "README.md"
 license = {text = "MIT"}
 
+classifiers = [
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Utilities",
+]
+
 [project.optional-dependencies]
 watch = ["watchfiles"]
 all = ["pyfuture[watch]"]
@@ -65,12 +76,13 @@ exclude = [
 
 [tool.pdm.dev-dependencies]
 test = [
+    "pyfuture[all]",
+    "pdm-backend",
     "xdoctest",
     "pytest",
     "pytest-cov",
     "coverage",
 ]
-backend = ["pdm-backend"]
 
 [tool.pdm.scripts]
 cov ={ composite = ["pytest ./tests ./pyfuture --cov=pyfuture --xdoc", "coverage xml"]}

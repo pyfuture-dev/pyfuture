@@ -1,5 +1,22 @@
 # PyFuture
-一个用于提前使用 Python 新特性的工具
+<p align="center">
+    <em>一个用于提前使用 Python 新特性的工具</em>
+</p>
+<p align="center">
+<a href="https://github.com/zrr-lab/pyfuture/actions?query=workflow%3ATest+event%3Apush+branch%3Amaster" target="_blank">
+    <img src="https://github.com/zrr-lab/pyfuture/workflows/Test/badge.svg?event=push&branch=master" alt="Test">
+</a>
+<a href="https://coverage-badge.samuelcolvin.workers.dev/redirect/zrr-lab/pyfuture" target="_blank">
+    <img src="https://coverage-badge.samuelcolvin.workers.dev/zrr-lab/pyfuture.svg" alt="Coverage">
+</a>
+<a href="https://pypi.org/project/pyfuture" target="_blank">
+    <img src="https://img.shields.io/pypi/v/pyfuture?color=%2334D058&label=pypi%20package" alt="Package version">
+</a>
+<a href="https://pypi.org/project/pyfuture" target="_blank">
+    <img src="https://img.shields.io/pypi/pyversions/pyfuture.svg?color=%2334D058" alt="Supported Python versions">
+</a>
+</p>
+
 
 ## 代码转写层级
 rule: 转写规则，比如替换 `type` 关键字。
