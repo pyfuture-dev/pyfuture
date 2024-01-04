@@ -3,9 +3,6 @@
     <em>一个用于提前使用 Python 新特性的工具</em>
 </p>
 <p align="center">
-<a href="https://github.com/zrr-lab/pyfuture/actions?query=workflow%3ATest+event%3Apush+branch%3Amaster" target="_blank">
-    <img src="https://github.com/zrr-lab/pyfuture/workflows/Test/badge.svg?event=push&branch=master" alt="Test">
-</a>
 <a href="https://coverage-badge.samuelcolvin.workers.dev/redirect/zrr-lab/pyfuture" target="_blank">
     <img src="https://coverage-badge.samuelcolvin.workers.dev/zrr-lab/pyfuture.svg" alt="Coverage">
 </a>
