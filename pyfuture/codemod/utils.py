@@ -4,7 +4,8 @@ from collections.abc import Iterable
 from enum import Enum
 
 import libcst as cst
-from libcst.codemod import Codemod
+from libcst.codemod import Codemod, CodemodContext
+from libcst.codemod.visitors import AddImportsVisitor
 
 
 class RuleSet(Enum):
@@ -102,7 +103,9 @@ def transform_bit_or(op: cst.BinaryOperation, use_union: bool = True) -> cst.Sub
 
 
 def gen_type_param(
-    type_param: cst.TypeVar | cst.TypeVarTuple | cst.ParamSpec, type_name: cst.Name | None = None
+    type_param: cst.TypeVar | cst.TypeVarTuple | cst.ParamSpec,
+    type_name: cst.Name | None = None,
+    context: CodemodContext | None = None,
 ) -> cst.SimpleStatementLine:
     """
     To generate type parameter definition statement.
@@ -128,6 +131,12 @@ def gen_type_param(
             if bound is not None:
                 if isinstance(bound, cst.BinaryOperation):
                     bound = transform_bit_or(bound) or bound
+                    if (
+                        isinstance(bound, cst.Subscript)
+                        and isinstance(bound_value := bound.value, cst.Name)
+                        and context is not None
+                    ):
+                        AddImportsVisitor.add_needed_import(context, "typing", bound_value.value)
                 args.append(cst.Arg(bound, keyword=cst.Name("bound")))
             return cst.SimpleStatementLine(
                 [

@@ -252,7 +252,20 @@ class TransformMatchCommand(VisitorBasedCodemodCommand):
         test_value = 123
         if test_value == y:
             print("other")
+
+    >>> module = cst.parse_module(\"""
+    ... def test6():
+    ...    for i in range(2):
+    ...        match i:
+    ...            case 0:
+    ...                yield 0
+    ...            case 1:
+    ...                yield 1
+    ... \""")
+    >>> new_module = transformer.transform_module(module)
     """
+
+    # TODO(zrr1999): Need to support nested
 
     METADATA_DEPENDENCIES = (ScopeProvider,)
 

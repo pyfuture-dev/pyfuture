@@ -52,13 +52,14 @@ class TransformTypeParametersCommand(VisitorBasedCodemodCommand):
     ... \""")
     >>> new_module = transformer.transform_module(module)
     >>> print(new_module.code)
-    from typing import TypeVar
+    from typing import TypeVar, Union
     def __wrapper_func_test():
         __test_T = TypeVar("__test_T", bound = Union[int, str])
         def test(x: __test_T) -> __test_T:
             return x
         return test
     test = __wrapper_func_test()
+    >>> transformer = TransformTypeParametersCommand(CodemodContext())
     >>> module = cst.parse_module(\"""
     ... class Test[T: int]:
     ...     def test[P: str](self, x: T, y: P) -> tuple[T, P]:
@@ -94,8 +95,7 @@ class TransformTypeParametersCommand(VisitorBasedCodemodCommand):
             new_name = type_param.param.name.with_changes(value=f"{prefix}{type_param.param.name.value}{suffix}")
 
             AddImportsVisitor.add_needed_import(self.context, "typing", type_param.param.__class__.__name__)
-            AddImportsVisitor.add_needed_import(self.context, "typing", "Union")
-            statements.append(gen_type_param(type_param.param, new_name))
+            statements.append(gen_type_param(type_param.param, new_name, self.context))
             slices.append(
                 SubscriptElement(
                     slice=Index(value=new_name),
