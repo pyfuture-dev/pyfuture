@@ -6,12 +6,12 @@ authors = [
     {name = "Zhan Rongrui", email = "2742392377@qq.com"},
 ]
 dependencies = [
-    "libcst>=1.1.0",
+    "libcst>=1.2.0",
     "typer>=0.9.0",
     "loguru>=0.7.2",
     "rich>=13.7.0",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 readme = "README.md"
 license = {text = "MIT"}
 

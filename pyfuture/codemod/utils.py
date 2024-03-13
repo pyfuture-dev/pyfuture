@@ -13,6 +13,7 @@ class RuleSet(Enum):
     pep622 = "pep622"
     # python 3.12+
     pep695 = "pep695"
+    pep701 = "pep701"
 
 
 def get_transformers(rule_sets: list[RuleSet] | RuleSet) -> Iterable[type[Codemod]]:
@@ -27,6 +28,7 @@ def get_transformers(rule_sets: list[RuleSet] | RuleSet) -> Iterable[type[Codemo
     from .pep604 import TransformUnionTypesCommand
     from .pep622 import TransformMatchCommand
     from .pep695 import TransformTypeParametersCommand
+    from .pep701 import TransformFStringCommand
 
     if not isinstance(rule_sets, list):
         rule_sets = [rule_sets]
@@ -39,6 +41,8 @@ def get_transformers(rule_sets: list[RuleSet] | RuleSet) -> Iterable[type[Codemo
                 yield TransformMatchCommand
             case RuleSet.pep695:
                 yield TransformTypeParametersCommand
+            case RuleSet.pep701:
+                yield TransformFStringCommand
             case _:  # pragma: no cover
                 raise ValueError(f"Unknown rule set: {rule_set}")
 

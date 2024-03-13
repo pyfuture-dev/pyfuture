@@ -45,7 +45,7 @@ def apply_transformer(
 def transfer_code(
     code: str,
     *,
-    target: tuple[int, int] = (3, 8),
+    target: tuple[int, int] = (3, 9),
 ) -> str:
     """
     Transfer code to specified target version of python.
@@ -66,7 +66,7 @@ def transfer_code(
     assert target[0] == 3, "Only support python3"
     transformers = []
     if target[1] < 12:
-        transformers.extend(get_transformers(RuleSet.pep695))
+        transformers.extend(get_transformers([RuleSet.pep695, RuleSet.pep701]))
     if target[1] < 10:
         transformers.extend(get_transformers([RuleSet.pep622, RuleSet.pep604]))
     new_code = apply_transformer(
@@ -80,7 +80,7 @@ def transfer_file(
     src_file: Path,
     tgt_file: Path,
     *,
-    target: tuple[int, int] = (3, 8),
+    target: tuple[int, int] = (3, 9),
 ):
     """
     Transfer code from src_file and write to tgt_file.
