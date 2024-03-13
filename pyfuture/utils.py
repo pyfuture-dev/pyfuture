@@ -34,11 +34,13 @@ def apply_transformer(
     """
     with contextlib.redirect_stdout(io.StringIO()):
         module = cst.parse_module(code)
-        # while True:
-        for transformer in transformers:
-            module = transformer(CodemodContext()).transform_module(module)
-            # if code == module.code:
-            #     break
+        # TODO(zrr1999): improve the performance
+        while True:
+            for transformer in transformers:
+                module = transformer(CodemodContext()).transform_module(module)
+            if code == module.code:
+                break
+            code = module.code
     return module.code
 
 
