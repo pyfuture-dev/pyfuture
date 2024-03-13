@@ -94,6 +94,7 @@ class TransformTypeParametersCommand(VisitorBasedCodemodCommand):
             new_name = type_param.param.name.with_changes(value=f"{prefix}{type_param.param.name.value}{suffix}")
 
             AddImportsVisitor.add_needed_import(self.context, "typing", type_param.param.__class__.__name__)
+            AddImportsVisitor.add_needed_import(self.context, "typing", "Union")
             statements.append(gen_type_param(type_param.param, new_name))
             slices.append(
                 SubscriptElement(
