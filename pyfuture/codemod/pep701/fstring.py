@@ -1,12 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
-
 import libcst as cst
-from libcst import (
-    ClassDef,
-    FunctionDef,
-)
 from libcst.codemod import (
     CodemodContext,
     VisitorBasedCodemodCommand,
@@ -47,7 +41,6 @@ class TransformFStringCommand(VisitorBasedCodemodCommand):
     METADATA_DEPENDENCIES = (ScopeProvider,)
 
     def __init__(self, context: CodemodContext) -> None:
-        self.node_to_wrapper: dict[FunctionDef | ClassDef, Any] = {}
         super().__init__(context)
 
     def leave_FormattedString(self, original_node: cst.FormattedString, updated_node: cst.FormattedString):
