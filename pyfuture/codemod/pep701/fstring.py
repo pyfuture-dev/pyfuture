@@ -62,15 +62,12 @@ class TransformFStringCommand(VisitorBasedCodemodCommand):
                 format_spec_str = ""
                 if (format_spec := node.format_spec) is not None:
                     for format_spec_node in format_spec:
-                        if isinstance(format_spec_node, cst.FormattedStringText):
-                            format_spec_str += format_spec_node.value
-                        else:
-                            raise NotImplementedError(f"Unknown node type: {format_spec_node}")
+                        assert isinstance(format_spec_node, cst.FormattedStringText), f"Unknown node type: {node}"
+                        format_spec_str += format_spec_node.value
                 string += f"{{:{format_spec_str}}}"
-            elif isinstance(node, cst.FormattedStringText):
-                string += node.value
             else:
-                raise NotImplementedError(f"Unknown node type: {node}")
+                assert isinstance(node, cst.FormattedStringText), f"Unknown node type: {node}"
+                string += node.value
         return cst.Call(
             func=cst.Attribute(
                 value=cst.SimpleString(value=f"{start}{string}{end}"),
