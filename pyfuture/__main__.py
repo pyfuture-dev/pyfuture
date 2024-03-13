@@ -21,21 +21,21 @@ def init_logger(log_level: str):
 
 
 @app.command()
-def transfer(src_file: Path, tgt_file: Path, *, target: str = "3.8", log_level: str = "INFO"):
+def transfer(src_file: Path, tgt_file: Path, *, target: str = "3.9", log_level: str = "INFO"):
     """
     Transfer code from src_file and write to tgt_file.
     """
-    assert target == "3.8", "PyFuture is very early stage, not support target argument yet"
+    assert target == "3.9", "PyFuture is very early stage, not support target argument yet"
     init_logger(log_level)
     transfer_file(src_file, tgt_file)
 
 
 @app.command()
-def watch(src_file: Path, tgt_file: Path, *, target: str = "3.8", log_level: str = "INFO"):  # pragma: no cover
+def watch(src_file: Path, tgt_file: Path, *, target: str = "3.9", log_level: str = "INFO"):  # pragma: no cover
     """
     Transfer all python files in src_dir to build_dir, and watch for changes.
     """
-    assert target == "3.8", "PyFuture is very early stage, not support target argument yet"
+    assert target == "3.9", "PyFuture is very early stage, not support target argument yet"
     init_logger(log_level)
     transfer_file(src_file, tgt_file)
 
@@ -53,11 +53,11 @@ def watch(src_file: Path, tgt_file: Path, *, target: str = "3.8", log_level: str
 
 
 @app.command()
-def transfer_dir(src_dir: Path, build_dir: Path, *, target: str = "3.8", log_level: str = "INFO"):
+def transfer_dir(src_dir: Path, build_dir: Path, *, target: str = "3.9", log_level: str = "INFO"):
     """
     Transfer all python files in src_dir to build_dir.
     """
-    assert target == "3.8", "PyFuture is very early stage, not support target argument yet"
+    assert target == "3.9", "PyFuture is very early stage, not support target argument yet"
     init_logger(log_level)
 
     for src_file in src_dir.glob("**/*.py"):
@@ -66,11 +66,11 @@ def transfer_dir(src_dir: Path, build_dir: Path, *, target: str = "3.8", log_lev
 
 
 @app.command()
-def watch_dir(src_dir: Path, build_dir: Path, *, target: str = "3.8", log_level: str = "INFO"):  # pragma: no cover
+def watch_dir(src_dir: Path, build_dir: Path, *, target: str = "3.9", log_level: str = "INFO"):  # pragma: no cover
     """
     Transfer all python files in src_dir to build_dir, and watch for changes.
     """
-    assert target == "3.8", "PyFuture is very early stage, not support target argument yet"
+    assert target == "3.9", "PyFuture is very early stage, not support target argument yet"
     init_logger(log_level)
     transfer_dir(src_dir, build_dir, target=target)
 
