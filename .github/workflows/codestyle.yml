@@ -18,5 +18,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install dependencies 📦
+        run: |
+          pip install -e .[all]
+          pip install pytest
+
       - name: Run pre-commit ✅
         uses: pre-commit/action@v3.0.0
