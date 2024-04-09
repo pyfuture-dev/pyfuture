@@ -4,25 +4,19 @@ on:
   push:
     branches: [main]
   pull_request:
-  workflow_dispatch:
 
 jobs:
   code-style-check:
     runs-on: ubuntu-latest
     name: CodeStyle Check
     steps:
-      - name: Checkout
+      - name: Checkout 📦
         uses: actions/checkout@v3
 
-      - name: Install python
+      - name: Install python 📦
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: |
-          pip install -e .[all]
-          pip install pytest
-
-      - name: Run pre-commit
+      - name: Run pre-commit ✅
         uses: pre-commit/action@v3.0.0

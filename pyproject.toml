@@ -20,7 +20,7 @@ watch = ["watchfiles"]
 all = ["pyfuture[watch]"]
 
 [project.urls]
-Homepage = "https://pypi.org/project/pyfuture"
+Homepage = "https://github.com/zrr-lab/pyfuture.git"
 Repository = "https://github.com/zrr-lab/pyfuture.git"
 
 [project.scripts]

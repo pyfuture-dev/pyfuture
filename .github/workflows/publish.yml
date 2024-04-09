@@ -15,9 +15,9 @@ jobs:
     permissions:
       id-token: write
     steps:
-    - name: Checkout
+    - name: Checkout 📦
       uses: actions/checkout@v3
-    - name: Setup PDM
+    - name: Setup PDM 📦
       uses: pdm-project/setup-pdm@v3
       with:
         python-version: "3.12"
@@ -40,6 +40,8 @@ jobs:
     permissions:
       id-token: write
     steps:
+    - name: Checkout 📦
+      uses: actions/checkout@v3
     - name: Download wheels 👷‍♂️
       uses: actions/download-artifact@v3
       with:
