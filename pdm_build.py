@@ -29,8 +29,9 @@ def pdm_build_initialize(context: Context) -> None:
 
 def pdm_build_update_files(context: Context, files: dict[str, Path]) -> None:
     from pyfuture.hooks import pdm as pyfuture_pdm_hooks
+    from pyfuture.utils import get_target
 
     hook_config = pyfuture_pdm_hooks.get_hook_config(context)
     target_str = pyfuture_pdm_hooks.get_target_str(hook_config)
-    target = pyfuture_pdm_hooks.get_target(target_str)
+    target = get_target(target_str)
     pyfuture_pdm_hooks.pdm_build_update_files(context, files, target)

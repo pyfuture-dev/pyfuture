@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import sys
 from pathlib import Path
 
 from pdm.backend.hooks.base import Context
@@ -26,26 +25,8 @@ def get_target_str(hook_config: dict) -> str | None:
     """
     target_str = os.environ.get("PYFUTURE_TARGET", None)
     if target_str is None:
-        target_str = hook_config.get("target", None)
+        target_str = hook_config.get("target")
     return target_str
-
-
-def get_target(target_str: str | None) -> tuple[int, int]:
-    """
-    Get target version from target string.
-
-    Example:
-    >>> get_target(None) == sys.version_info[:2]
-    True
-    >>> get_target("py39")
-    (3, 9)
-    >>> get_target("py310")
-    (3, 10)
-    """
-    if target_str is None:
-        return sys.version_info[:2]
-    else:
-        return (int(target_str[2:3]), int(target_str[3:]))
 
 
 def get_hook_config(context: Context) -> dict:  # pragma: no cover

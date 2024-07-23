@@ -2,12 +2,31 @@ from __future__ import annotations
 
 import contextlib
 import io
+import sys
 from pathlib import Path
 
 import libcst as cst
 from libcst.codemod import Codemod, CodemodContext
 
 from .codemod.utils import RuleSet, get_transformers
+
+
+def get_target(target_str: str | None) -> tuple[int, int]:
+    """
+    Get target version from target string.
+
+    Example:
+    >>> get_target(None) == sys.version_info[:2]
+    True
+    >>> get_target("py39")
+    (3, 9)
+    >>> get_target("py310")
+    (3, 10)
+    """
+    if target_str is None:
+        return sys.version_info[:2]
+    else:
+        return (int(target_str[2:3]), int(target_str[3:]))
 
 
 def apply_transformer(
